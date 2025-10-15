@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { SUPPORT_TICKET_TYPE, SUPPORT_TICKET_PRIORITY, SUPPORT_TICKET_STATUS } = require('../utils/constants');
+
 const supportTicketSchema = new mongoose.Schema({
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +15,7 @@ const supportTicketSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['feedback', 'bug', 'feature', 'help', 'contribute'],
+    enum: Object.values(SUPPORT_TICKET_TYPE),
     required: true
   },
   category: {
@@ -30,13 +32,13 @@ const supportTicketSchema = new mongoose.Schema({
   },
   priority: {
     type: String,
-    enum: ['low', 'medium', 'high', 'urgent'],
-    default: 'medium'
+    enum: Object.values(SUPPORT_TICKET_PRIORITY),
+    default: SUPPORT_TICKET_PRIORITY.MEDIUM
   },
   status: {
     type: String,
-    enum: ['pending', 'in-progress', 'resolved', 'closed'],
-    default: 'pending'
+    enum: Object.values(SUPPORT_TICKET_STATUS),
+    default: SUPPORT_TICKET_STATUS.PENDING
   },
   rating: {
     type: Number,

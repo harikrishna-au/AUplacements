@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Company = require('../models/Company');
 const StudentApplication = require('../models/StudentApplication');
+const { APPLICATION_STATUS } = require('../utils/constants');
 const { authenticate } = require('../middleware/auth');
 
 // Get all active companies
@@ -119,11 +120,11 @@ router.put('/applications/:id/stage', authenticate, async (req, res) => {
     
     // Update overall status
     if (status === 'failed') {
-      application.status = 'rejected';
+      application.status = APPLICATION_STATUS.REJECTED;
     } else if (stageNumber === 5 && status === 'cleared') {
-      application.status = 'selected';
+      application.status = APPLICATION_STATUS.SELECTED;
     } else {
-      application.status = 'in-progress';
+      application.status = APPLICATION_STATUS.IN_PROGRESS;
     }
     
     application.lastUpdated = new Date();
@@ -147,7 +148,7 @@ router.put('/applications/:id/withdraw', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Application not found' });
     }
     
-    application.status = 'withdrawn';
+    application.status = APPLICATION_STATUS.WITHDRAWN;
     application.lastUpdated = new Date();
     await application.save();
     

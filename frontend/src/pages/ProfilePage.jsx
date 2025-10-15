@@ -36,7 +36,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center px-3 sm:px-4">
         <div className="text-center">
           <Loader2 className="inline-block h-16 w-16 animate-spin text-indigo-600 mb-4" />
           <p className="text-gray-600">Loading profile...</p>
@@ -47,69 +47,9 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-md border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">🎓</span>
-              <h1 className="text-xl font-bold text-gray-900">AU Placements</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/dashboard')}
-              >
-                Dashboard
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-indigo-600"
-              >
-                Profile
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/calendar')}
-              >
-                📅 Calendar
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/pipeline')}
-              >
-                🔄 Pipeline
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/forum')}
-              >
-                💬 Forum
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/resources')}
-              >
-                📚 Resources
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/support')}
-              >
-                🆘 Support
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={logout}
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full px-3 sm:px-4 lg:px-8 py-6 md:py-8">
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900">My Profile</h2>

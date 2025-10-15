@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { APPLICATION_STATUS, STAGE_STATUS } = require('../utils/constants');
+
 const studentApplicationSchema = new mongoose.Schema({
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -15,8 +17,8 @@ const studentApplicationSchema = new mongoose.Schema({
   // Application status
   status: {
     type: String,
-    enum: ['applied', 'in-progress', 'selected', 'rejected', 'withdrawn'],
-    default: 'applied'
+    enum: Object.values(APPLICATION_STATUS),
+    default: APPLICATION_STATUS.APPLIED
   },
   
   // Current stage in recruitment process
@@ -31,7 +33,7 @@ const studentApplicationSchema = new mongoose.Schema({
     stageName: String,
     status: {
       type: String,
-      enum: ['pending', 'cleared', 'failed', 'skipped']
+      enum: Object.values(STAGE_STATUS)
     },
     completedDate: Date,
     score: String,

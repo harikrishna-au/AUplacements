@@ -51,6 +51,9 @@ app.use('/api/auth', require('./routes/auth'));
 // Student routes
 app.use('/api/students', require('./routes/students'));
 
+// Profile routes (New)
+app.use('/api/profile', require('./routes/profile'));
+
 // Application routes (Pipeline)
 app.use('/api/applications', require('./routes/applications'));
 
@@ -65,6 +68,9 @@ app.use('/api/events', require('./routes/events'));
 
 // Support routes
 app.use('/api/support', require('./routes/support'));
+
+ // Companies admin routes (Create/Update companies)
+app.use('/api/companies', require('./routes/companies'));
 
 // 404 handler
 app.use((req, res) => {

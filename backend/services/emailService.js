@@ -13,6 +13,24 @@ const transporter = nodemailer.createTransport({
  * Send magic link email to student
  */
 async function sendMagicLinkEmail(email, fullName, magicLink) {
+  // Development Mode: Skip email sending and log to console
+  if (process.env.NODE_ENV === 'development') {
+    console.log('\n' + '='.repeat(70));
+    console.log('🔧 DEVELOPMENT MODE - Email Bypassed');
+    console.log('='.repeat(70));
+    console.log(`📧 To: ${email}`);
+    console.log(`👤 Name: ${fullName}`);
+    console.log(`🔗 Magic Link:\n\n   ${magicLink}\n`);
+    console.log('='.repeat(70) + '\n');
+    
+    return { 
+      success: true, 
+      messageId: 'dev-mode-' + Date.now(),
+      devMode: true 
+    };
+  }
+
+  // Production Mode: Send actual email
   try {
     const mailOptions = {
       from: `"AU Placements" <${process.env.EMAIL_USER}>`,
@@ -91,6 +109,12 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
  * Verify email configuration
  */
 async function verifyEmailConfig() {
+  // Skip verification in development mode
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔧 Development Mode - Email service disabled (using console logging)');
+    return true;
+  }
+
   try {
     await transporter.verify();
     console.log('✅ Email service is ready');

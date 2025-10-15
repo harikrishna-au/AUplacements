@@ -42,9 +42,29 @@ const companySchema = new mongoose.Schema({
     default: true
   },
   
-  // Important dates
+  // Important dates & events
   registrationDeadline: Date,
-  placementDriveDate: Date
+  placementDriveDate: Date,
+  
+  // Placement Events/Schedule
+  events: [{
+    title: String,
+    type: {
+      type: String,
+      enum: ['pre-placement', 'test', 'interview', 'group-discussion', 'drive', 'result'],
+      default: 'pre-placement'
+    },
+    description: String,
+    startDate: Date,
+    endDate: Date,
+    location: String,
+    mode: {
+      type: String,
+      enum: ['online', 'offline', 'hybrid'],
+      default: 'offline'
+    },
+    maxCapacity: Number
+  }]
   
 }, { timestamps: true });
 

@@ -12,19 +12,22 @@ import ResourcesPage from './pages/ResourcesPage';
 import FeedbackSupport from './pages/FeedbackSupport';
 import CompanyListPage from './pages/CompanyListPage';
 import './App.css'
+import AppLayout from './components/AppLayout';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/verify" element={<VerifyPage />} />
+          <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
+          <Route path="/auth/verify" element={<AppLayout><VerifyPage /></AppLayout>} />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <AppLayout>
+                  <DashboardPage />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -32,7 +35,9 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute>
-                <ProfilePage />
+                <AppLayout>
+                  <ProfilePage />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -40,7 +45,9 @@ function App() {
             path="/calendar"
             element={
               <ProtectedRoute>
-                <PlacementsCalendar />
+                <AppLayout>
+                  <PlacementsCalendar />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -48,7 +55,9 @@ function App() {
             path="/pipeline"
             element={
               <ProtectedRoute>
-                <CompanyPipeline />
+                <AppLayout>
+                  <CompanyPipeline />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -56,7 +65,9 @@ function App() {
             path="/forum"
             element={
               <ProtectedRoute>
-                <DiscussionForum />
+                <AppLayout>
+                  <DiscussionForum />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -64,7 +75,9 @@ function App() {
             path="/resources"
             element={
               <ProtectedRoute>
-                <ResourcesPage />
+                <AppLayout>
+                  <ResourcesPage />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -72,7 +85,9 @@ function App() {
             path="/support"
             element={
               <ProtectedRoute>
-                <FeedbackSupport />
+                <AppLayout>
+                  <FeedbackSupport />
+                </AppLayout>
               </ProtectedRoute>
             }
           />
@@ -80,7 +95,9 @@ function App() {
             path="/companies"
             element={
               <ProtectedRoute>
-                <CompanyListPage />
+                <AppLayout>
+                  <CompanyListPage />
+                </AppLayout>
               </ProtectedRoute>
             }
           />

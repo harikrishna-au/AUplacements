@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 const Student = require('../models/Student');
+const StudentProfile = require('../models/StudentProfile');
 const MagicLink = require('../models/MagicLink');
 const { sendMagicLinkEmail } = require('../services/emailService');
 const { generateToken, generateMagicToken, verifyToken } = require('../utils/jwt');
@@ -33,13 +34,16 @@ router.post('/send-magic-link', async (req, res) => {
       });
     }
 
-    // Find student in database
-    const student = await Student.findOne({ collegeEmail: normalizedEmail });
-
+    // Find or create student in database
+    let student = await Student.findOne({ collegeEmail: normalizedEmail });
     if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: 'Student not found. Please contact the placement office if you believe this is an error.'
+      // Derive roll number from email local-part
+      const rollNumber = normalizedEmail.split('@')[0];
+      // Create a minimal profile immediately so subsequent entities can reference this student
+      student = await Student.create({
+        fullName: rollNumber, // Placeholder; can be updated later from records
+        collegeEmail: normalizedEmail,
+        universityRegisterNumber: rollNumber,
       });
     }
 
@@ -132,6 +136,54 @@ router.get('/verify/:token', async (req, res) => {
     student.lastLoginAt = new Date();
     await student.save();
 
+    // Create or update StudentProfile on first login
+    let studentProfile = await StudentProfile.findOne({ studentId: student._id });
+    
+    if (!studentProfile) {
+      // First time login - create profile
+      studentProfile = await StudentProfile.create({
+        studentId: student._id,
+        universityRegisterNumber: student.universityRegisterNumber,
+        fullName: student.fullName,
+        collegeEmail: student.collegeEmail,
+        phoneNumber: student.phoneNumber,
+        course: student.course,
+        branch: student.branch,
+        academicDetails: {
+          cgpa: student.cgpa || student.auccCGPA,
+          activeBacklogs: student.activeBacklogs || student.standingBacklogs || 0,
+          historyOfBacklogs: student.historyOfBacklogs || 0,
+          tenthPercentage: student.tenthPercentage || student.tenthCGPA,
+          twelfthPercentage: student.twelfthPercentage,
+          diplomaPercentage: student.diplomaPercentage
+        },
+        socialLinks: {
+          portfolio: student.portfolioUrl,
+          linkedin: student.linkedinUrl,
+          github: student.githubUrl
+        },
+        documents: {
+          resume: student.resumeUrl ? {
+            url: student.resumeUrl,
+            uploadedAt: new Date()
+          } : undefined
+        },
+        activityLog: {
+          lastLogin: new Date(),
+          totalLogins: 1
+        }
+      });
+      
+      console.log('✅ Created StudentProfile for:', student.collegeEmail);
+    } else {
+      // Existing user - update login stats
+      studentProfile.activityLog.lastLogin = new Date();
+      studentProfile.activityLog.totalLogins += 1;
+      await studentProfile.save();
+      
+      console.log('✅ Updated login for:', student.collegeEmail);
+    }
+
     // Generate session JWT token (7 days)
     const sessionToken = generateToken(student._id, student.collegeEmail, student.fullName);
 
@@ -142,11 +194,14 @@ router.get('/verify/:token', async (req, res) => {
         token: sessionToken,
         user: {
           id: student._id,
+          profileId: studentProfile._id,
           name: student.fullName,
           email: student.collegeEmail,
           registerNumber: student.universityRegisterNumber,
           branch: student.branch,
-          course: student.course
+          course: student.course,
+          isProfileComplete: studentProfile.isProfileComplete,
+          profileCompletionPercentage: studentProfile.profileCompletionPercentage
         }
       }
     });

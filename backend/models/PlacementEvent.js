@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { EVENT_TYPE, EVENT_STATUS } = require('../utils/constants');
+
 const placementEventSchema = new mongoose.Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +19,7 @@ const placementEventSchema = new mongoose.Schema({
   
   eventType: {
     type: String,
-    enum: ['pre-placement-talk', 'aptitude-test', 'technical-interview', 'hr-interview', 'group-discussion', 'placement-drive', 'result', 'other'],
+    enum: Object.values(EVENT_TYPE),
     required: true
   },
   
@@ -75,8 +77,8 @@ const placementEventSchema = new mongoose.Schema({
   // Status
   status: {
     type: String,
-    enum: ['scheduled', 'ongoing', 'completed', 'cancelled'],
-    default: 'scheduled'
+    enum: Object.values(EVENT_STATUS),
+    default: EVENT_STATUS.SCHEDULED
   }
 
 }, { timestamps: true });

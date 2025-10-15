@@ -12,68 +12,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">🎓</span>
-              <h1 className="text-xl font-bold text-gray-900">
-                AU Placements Portal
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/profile')}
-                className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                👤 My Profile
-              </button>
-              <button
-                onClick={() => navigate('/calendar')}
-                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                📅 Calendar
-              </button>
-              <button
-                onClick={() => navigate('/pipeline')}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                🔄 Pipeline
-              </button>
-              <button
-                onClick={() => navigate('/forum')}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                💬 Forum
-              </button>
-              <button
-                onClick={() => navigate('/resources')}
-                className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                📚 Resources
-              </button>
-              <button
-                onClick={() => navigate('/support')}
-                className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                💬 Support
-              </button>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full px-3 sm:px-4 lg:px-8 py-6 md:py-8">
         {/* Welcome Card */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-xl p-8 text-white mb-8">
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-6 md:mb-8">
           <h2 className="text-3xl font-bold mb-2">
             Welcome, {user?.name}! 👋
           </h2>
@@ -83,7 +26,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Student Info Card */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-md p-5 md:p-6 mb-6 md:mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
             Your Profile
           </h3>
@@ -116,7 +59,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           <div 
             onClick={() => navigate('/profile')}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer"

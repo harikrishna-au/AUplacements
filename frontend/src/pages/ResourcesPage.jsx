@@ -219,49 +219,11 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">🎓</span>
-              <h1 className="text-xl font-bold text-gray-900">
-                AU Placements Portal
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                🏠 Dashboard
-              </button>
-              <button
-                onClick={() => navigate('/pipeline')}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                🔄 Pipeline
-              </button>
-              <button
-                onClick={() => navigate('/forum')}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                💬 Forum
-              </button>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-6 md:py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">📚 Placement Resources</h1>
@@ -305,8 +267,8 @@ export default function ResourcesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="w-full px-3 sm:px-4 lg:px-8 py-6 md:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
           {/* Sidebar - Companies */}
           <div className="lg:w-64 flex-shrink-0">
             <Card>
@@ -464,7 +426,7 @@ export default function ResourcesPage() {
                   <Card key={resource._id} className="hover:shadow-lg transition-shadow">
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-4 flex-1">
+                        <div className="flex items-start gap-3 md:gap-4 flex-1">
                           {/* Icon */}
                           <div className="bg-teal-100 p-3 rounded-lg">
                             {getResourceIcon(resource.resourceType)}

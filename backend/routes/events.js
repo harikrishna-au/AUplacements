@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const PlacementEvent = require('../models/PlacementEvent');
+const { EVENT_STATUS } = require('../utils/constants');
 const { authenticate } = require('../middleware/auth');
 
 // Get all events
@@ -54,7 +55,7 @@ router.get('/my-events', authenticate, async (req, res) => {
         { eligibleBranches: student.branch },
         { eligibleBranches: { $size: 0 } } // Events open to all
       ],
-      status: { $ne: 'cancelled' }
+      status: { $ne: EVENT_STATUS.CANCELLED }
     })
     .populate('companyId', 'name logo')
     .sort({ startDate: 1 });

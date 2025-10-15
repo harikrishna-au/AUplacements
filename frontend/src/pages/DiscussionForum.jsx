@@ -156,32 +156,11 @@ export default function DiscussionForum() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-md border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">🎓</span>
-              <h1 className="text-xl font-bold text-gray-900">AU Placements</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>Dashboard</Button>
-              <Button variant="ghost" onClick={() => navigate('/profile')}>Profile</Button>
-              <Button variant="ghost" onClick={() => navigate('/calendar')}>Calendar</Button>
-              <Button variant="ghost" onClick={() => navigate('/companies')}>Companies</Button>
-              <Button variant="ghost" onClick={() => navigate('/pipeline')}>Pipeline</Button>
-              <Button variant="ghost" className="text-indigo-600">Forum</Button>
-              <Button variant="ghost" onClick={() => navigate('/resources')}>Resources</Button>
-              <Button variant="ghost" onClick={() => navigate('/support')}>Support</Button>
-              <Button variant="destructive" onClick={logout}>Logout</Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h2 className="text-3xl font-bold text-gray-900">Discussion Forums</h2>
             <p className="text-gray-600 mt-2">Connect with peers and discuss company placements</p>
@@ -225,9 +204,9 @@ export default function DiscussionForum() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Companies Sidebar */}
-            <div className="col-span-3">
+            <div className="lg:col-span-3">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -268,7 +247,7 @@ export default function DiscussionForum() {
             </div>
 
             {/* Channels Sidebar */}
-            <div className="col-span-2">
+            <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -296,8 +275,8 @@ export default function DiscussionForum() {
             </div>
 
             {/* Chat Area */}
-            <div className="col-span-7">
-              <Card className="h-[700px] flex flex-col">
+            <div className="lg:col-span-7">
+              <Card className="flex flex-col" style={{ minHeight: '60vh' }}>
                 <CardHeader className="border-b">
                   <div className="flex items-center justify-between">
                     <div>
