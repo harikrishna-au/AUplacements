@@ -42,6 +42,12 @@ const companySchema = new mongoose.Schema({
     default: true
   },
   
+  // Campus Drive Flag - Only companies with this enabled appear in Pipeline & Calendar
+  isCampusDrive: {
+    type: Boolean,
+    default: false
+  },
+  
   // Important dates & events
   registrationDeadline: Date,
   placementDriveDate: Date,
@@ -63,7 +69,22 @@ const companySchema = new mongoose.Schema({
       enum: ['online', 'offline', 'hybrid'],
       default: 'offline'
     },
-    maxCapacity: Number
+    maxCapacity: Number,
+    participants: [{
+      studentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
+      },
+      status: {
+        type: String,
+        enum: ['registered', 'attended', 'missed'],
+        default: 'registered'
+      },
+      registeredAt: {
+        type: Date,
+        default: Date.now
+      }
+    }]
   }]
   
 }, { timestamps: true });

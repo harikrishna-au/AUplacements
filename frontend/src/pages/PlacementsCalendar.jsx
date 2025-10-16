@@ -55,13 +55,12 @@ export default function PlacementsCalendar() {
         desc: event.description,
         type: event.eventType,
         company: event.companyId?.name,
-        venue: event.isOnline ? 'Online' : (event.venue || event.location),
-        isOnline: event.isOnline,
-        meetingLink: event.meetingLink,
-        eligibleBranches: event.eligibleBranches,
+        venue: event.location,
+        mode: event.mode,
+        maxCapacity: event.maxCapacity,
         status: event.status,
-        participants: event.participants,
-        allDay: event.allDay,
+        participants: event.participants || [],
+        allDay: false,
         _raw: event // Keep raw data for registration
       }));
 
@@ -78,10 +77,18 @@ export default function PlacementsCalendar() {
     setSelectedEvent(event);
   }, []);
 
-  const handleRegisterForEvent = async (eventId) => {
+  const handleRegisterForEvent = async (event) => {
     try {
       setIsRegistering(true);
-      await eventAPI.registerForEvent(eventId);
+      // Extract companyId and eventId from the event object
+      const companyId = event._raw?.companyId?._id;
+      const eventId = event._raw?._id;
+      
+      if (!companyId || !eventId) {
+        throw new Error('Invalid event data');
+      }
+      
+      await eventAPI.registerForEvent(companyId, eventId);
       alert('Successfully registered for event!');
       // Refresh events to get updated participant list
       await fetchEvents();
@@ -98,22 +105,23 @@ export default function PlacementsCalendar() {
     let backgroundColor = '#3182ce';
     
     switch (event.type) {
-      case 'pre-placement-talk':
+      case 'pre-placement':
         backgroundColor = '#48bb78'; // green
         break;
-      case 'aptitude-test':
-      case 'technical-interview':
+      case 'test':
         backgroundColor = '#ed8936'; // orange
         break;
-      case 'hr-interview':
-      case 'group-discussion':
+      case 'interview':
         backgroundColor = '#9f7aea'; // purple
         break;
-      case 'placement-drive':
+      case 'group-discussion':
+        backgroundColor = '#38b2ac'; // teal
+        break;
+      case 'drive':
         backgroundColor = '#f56565'; // red
         break;
       case 'result':
-        backgroundColor = '#38b2ac'; // teal
+        backgroundColor = '#4299e1'; // blue
         break;
       default:
         backgroundColor = '#3182ce'; // blue
@@ -272,27 +280,16 @@ export default function PlacementsCalendar() {
 
                   <div>
                     <p className="text-sm font-medium text-gray-700">Venue</p>
-                    <p className="text-sm text-gray-600">{selectedEvent.venue}</p>
+                    <p className="text-sm text-gray-600">
+                      {selectedEvent.venue || 'TBA'} 
+                      {selectedEvent.mode && ` (${selectedEvent.mode})`}
+                    </p>
                   </div>
 
-                  {selectedEvent.isOnline && selectedEvent.meetingLink && (
+                  {selectedEvent.maxCapacity && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Meeting Link</p>
-                      <a 
-                        href={selectedEvent.meetingLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        {selectedEvent.meetingLink}
-                      </a>
-                    </div>
-                  )}
-
-                  {selectedEvent.eligibleBranches && selectedEvent.eligibleBranches.length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Eligible Branches</p>
-                      <p className="text-sm text-gray-600">{selectedEvent.eligibleBranches.join(', ')}</p>
+                      <p className="text-sm font-medium text-gray-700">Max Capacity</p>
+                      <p className="text-sm text-gray-600">{selectedEvent.maxCapacity} participants</p>
                     </div>
                   )}
 
@@ -316,7 +313,7 @@ export default function PlacementsCalendar() {
                   {selectedEvent.status === 'scheduled' && (
                     <Button 
                       className="w-full mt-4"
-                      onClick={() => handleRegisterForEvent(selectedEvent.id)}
+                      onClick={() => handleRegisterForEvent(selectedEvent)}
                       disabled={isRegistering}
                     >
                       {isRegistering ? 'Registering...' : 'Register for Event'}

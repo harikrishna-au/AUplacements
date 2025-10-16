@@ -9,7 +9,6 @@ import PlacementsCalendar from './pages/PlacementsCalendar';
 import CompanyPipeline from './pages/CompanyPipeline';
 import DiscussionForum from './pages/DiscussionForum';
 import ResourcesPage from './pages/ResourcesPage';
-import FeedbackSupport from './pages/FeedbackSupport';
 import CompanyListPage from './pages/CompanyListPage';
 import './App.css'
 import AppLayout from './components/AppLayout';
@@ -77,16 +76,6 @@ function App() {
               <ProtectedRoute>
                 <AppLayout>
                   <ResourcesPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/support"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <FeedbackSupport />
                 </AppLayout>
               </ProtectedRoute>
             }

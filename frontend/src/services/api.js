@@ -178,14 +178,17 @@ export const eventAPI = {
   // GET /api/events/my-events - Get student's relevant events
   getMyEvents: () => api.get('/events/my-events'),
   
-  // POST /api/events/:id/register - Register for an event
-  registerForEvent: (eventId) => api.post(`/events/${eventId}/register`),
+  // POST /api/events/:companyId/:eventId/register - Register for an event
+  registerForEvent: (companyId, eventId) => api.post(`/events/${companyId}/${eventId}/register`),
   
-  // PUT /api/events/:id/attendance - Update event attendance status
-  updateAttendance: (eventId, status) => api.put(`/events/${eventId}/attendance`, { status }),
+  // DELETE /api/events/:companyId/:eventId/register - Cancel event registration
+  cancelRegistration: (companyId, eventId) => api.delete(`/events/${companyId}/${eventId}/register`),
   
-  // GET /api/events/:id - Get event details
-  getEventById: (eventId) => api.get(`/events/${eventId}`),
+  // PUT /api/events/:companyId/:eventId/attendance - Update event attendance status
+  updateAttendance: (companyId, eventId, status) => api.put(`/events/${companyId}/${eventId}/attendance`, { status }),
+  
+  // GET /api/events/:companyId/:eventId - Get event details
+  getEventById: (companyId, eventId) => api.get(`/events/${companyId}/${eventId}`),
 };
 
 // ============================================

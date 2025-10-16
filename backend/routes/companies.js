@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Company = require('../models/Company');
-const PlacementEvent = require('../models/PlacementEvent');
 const { authenticate } = require('../middleware/auth');
 
 // NOTE: In the future, add role-based auth (e.g., isAdmin) on top of authenticate
@@ -22,6 +21,7 @@ router.post('/', authenticate, async (req, res) => {
       recruitmentStages: payload.recruitmentStages,
       stats: payload.stats,
       isActive: payload.isActive !== undefined ? payload.isActive : true,
+      isCampusDrive: payload.isCampusDrive !== undefined ? payload.isCampusDrive : false,
       registrationDeadline: payload.registrationDeadline,
       placementDriveDate: payload.placementDriveDate,
     });
@@ -89,7 +89,6 @@ router.post('/bulk-upload', authenticate, async (req, res) => {
     const results = {
       companiesCreated: 0,
       companiesUpdated: 0,
-      eventsCreated: 0,
       errors: []
     };
 
@@ -110,6 +109,7 @@ router.post('/bulk-upload', authenticate, async (req, res) => {
             recruitmentStages: companyData.recruitmentStages || company.recruitmentStages,
             stats: companyData.stats || company.stats,
             isActive: companyData.isActive !== undefined ? companyData.isActive : company.isActive,
+            isCampusDrive: companyData.isCampusDrive !== undefined ? companyData.isCampusDrive : company.isCampusDrive,
             registrationDeadline: companyData.registrationDeadline || company.registrationDeadline,
             placementDriveDate: companyData.placementDriveDate || company.placementDriveDate,
             events: companyData.events || company.events
@@ -129,39 +129,12 @@ router.post('/bulk-upload', authenticate, async (req, res) => {
             recruitmentStages: companyData.recruitmentStages || [],
             stats: companyData.stats || {},
             isActive: companyData.isActive !== undefined ? companyData.isActive : true,
+            isCampusDrive: companyData.isCampusDrive !== undefined ? companyData.isCampusDrive : false,
             registrationDeadline: companyData.registrationDeadline,
             placementDriveDate: companyData.placementDriveDate,
             events: companyData.events || []
           });
           results.companiesCreated++;
-        }
-
-        // Create calendar events for this company
-        if (companyData.events && Array.isArray(companyData.events)) {
-          for (const eventData of companyData.events) {
-            // Check if event already exists
-            const existingEvent = await PlacementEvent.findOne({
-              companyId: company._id,
-              title: eventData.title,
-              startDate: eventData.startDate
-            });
-
-            if (!existingEvent) {
-              await PlacementEvent.create({
-                title: eventData.title,
-                type: eventData.type || 'pre-placement',
-                description: eventData.description,
-                companyId: company._id,
-                startDate: new Date(eventData.startDate),
-                endDate: new Date(eventData.endDate),
-                location: eventData.location,
-                mode: eventData.mode || 'offline',
-                maxCapacity: eventData.maxCapacity,
-                eligibility: companyData.eligibilityCriteria || {}
-              });
-              results.eventsCreated++;
-            }
-          }
         }
 
       } catch (error) {
