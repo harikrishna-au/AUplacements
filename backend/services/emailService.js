@@ -1,27 +1,14 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// Create transporter - Configure with your Gmail
-// Using port 465 with SSL for better compatibility on cloud platforms like Render
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // true for 465 (SSL)
-  auth: {
-    user: process.env.EMAIL_USER, // Your Gmail address
-    pass: process.env.EMAIL_PASSWORD // Gmail App Password (not regular password)
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Send magic link email to student
  */
 async function sendMagicLinkEmail(email, fullName, magicLink) {
   try {
-    const mailOptions = {
-      from: `"AU Placements" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'AU Placements <onboarding@resend.dev>',
       to: email,
       subject: '🔐 Your Login Link - AU Placements Portal',
       html: `
@@ -63,7 +50,7 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
                 </ul>
               </div>
 
-              <p>If you didn’t request this login link, you can safely ignore this email.</p>
+              <p>If you didn't request this login link, you can safely ignore this email.</p>
 
               <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
               
@@ -81,11 +68,14 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
         </body>
         </html>
       `
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✉️  Email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    if (error) {
+      throw error;
+    }
+
+    console.log('✉️  Email sent successfully:', data.id);
+    return { success: true, messageId: data.id };
 
   } catch (error) {
     console.error('❌ Email sending failed:', error.message);
@@ -98,8 +88,10 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
  */
 async function verifyEmailConfig() {
   try {
-    await transporter.verify();
-    console.log('✅ Email service is ready and verified');
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY not configured');
+    }
+    console.log('✅ Email service is ready (Resend)');
     return true;
   } catch (error) {
     console.error('❌ Email service configuration failed:', error.message);
