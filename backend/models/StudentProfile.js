@@ -291,9 +291,8 @@ const studentProfileSchema = new mongoose.Schema({
 });
 
 // Indexes for better query performance
-studentProfileSchema.index({ studentId: 1 });
-studentProfileSchema.index({ universityRegisterNumber: 1 });
-studentProfileSchema.index({ collegeEmail: 1 });
+// Note: studentId, universityRegisterNumber, and collegeEmail indexes are already created
+// via the "unique: true" option in the schema, so we only need these additional indexes:
 studentProfileSchema.index({ 'flags.isPlaced': 1 });
 studentProfileSchema.index({ 'academicDetails.cgpa': 1 });
 

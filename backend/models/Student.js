@@ -93,8 +93,7 @@ const studentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for faster email lookups
-studentSchema.index({ collegeEmail: 1 });
-studentSchema.index({ universityRegisterNumber: 1 });
+// Note: Indexes for collegeEmail and universityRegisterNumber are already created
+// via the "unique: true" option in the schema, so we don't need to create them again
 
 module.exports = mongoose.model('Student', studentSchema);
