@@ -1,14 +1,23 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create transporter using SendGrid SMTP
+const transporter = nodemailer.createTransport({
+  host: 'smtp.sendgrid.net',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'apikey', // This is literally the string 'apikey'
+    pass: process.env.SENDGRID_API_KEY // Your SendGrid API Key
+  }
+});
 
 /**
  * Send magic link email to student
  */
 async function sendMagicLinkEmail(email, fullName, magicLink) {
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'AU Placements <onboarding@resend.dev>',
+    const mailOptions = {
+      from: `"AU Placements" <${process.env.EMAIL_FROM || 'noreply@auplacements.com'}>`,
       to: email,
       subject: '🔐 Your Login Link - AU Placements Portal',
       html: `
@@ -68,14 +77,11 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
         </body>
         </html>
       `
-    });
+    };
 
-    if (error) {
-      throw error;
-    }
-
-    console.log('✉️  Email sent successfully:', data.id);
-    return { success: true, messageId: data.id };
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✉️  Email sent successfully:', info.messageId);
+    return { success: true, messageId: info.messageId };
 
   } catch (error) {
     console.error('❌ Email sending failed:', error.message);
@@ -88,10 +94,8 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
  */
 async function verifyEmailConfig() {
   try {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY not configured');
-    }
-    console.log('✅ Email service is ready (Resend)');
+    await transporter.verify();
+    console.log('✅ Email service is ready and verified (SendGrid)');
     return true;
   } catch (error) {
     console.error('❌ Email service configuration failed:', error.message);
