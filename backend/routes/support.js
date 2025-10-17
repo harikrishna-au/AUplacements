@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const SupportTicket = require('../models/SupportTicket');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
 // Get all tickets for the authenticated student
-router.get('/my-tickets', authenticateToken, async (req, res) => {
+router.get('/my-tickets', authenticate, async (req, res) => {
   try {
     const tickets = await SupportTicket.find({ 
       studentId: req.user.studentId 
@@ -18,7 +18,7 @@ router.get('/my-tickets', authenticateToken, async (req, res) => {
 });
 
 // Get a specific ticket by ID
-router.get('/tickets/:id', authenticateToken, async (req, res) => {
+router.get('/tickets/:id', authenticate, async (req, res) => {
   try {
     const ticket = await SupportTicket.findOne({
       _id: req.params.id,
@@ -36,7 +36,7 @@ router.get('/tickets/:id', authenticateToken, async (req, res) => {
 });
 
 // Create a new ticket
-router.post('/create', authenticateToken, async (req, res) => {
+router.post('/create', authenticate, async (req, res) => {
   try {
     const { 
       type, 
@@ -81,7 +81,7 @@ router.post('/create', authenticateToken, async (req, res) => {
 });
 
 // Update ticket status (for admin, but can be used to close tickets)
-router.patch('/tickets/:id/status', authenticateToken, async (req, res) => {
+router.patch('/tickets/:id/status', authenticate, async (req, res) => {
   try {
     const { status } = req.body;
     
@@ -112,7 +112,7 @@ router.patch('/tickets/:id/status', authenticateToken, async (req, res) => {
 });
 
 // Add response to ticket (typically admin, but students can add comments)
-router.post('/tickets/:id/response', authenticateToken, async (req, res) => {
+router.post('/tickets/:id/response', authenticate, async (req, res) => {
   try {
     const { message } = req.body;
     
@@ -147,7 +147,7 @@ router.post('/tickets/:id/response', authenticateToken, async (req, res) => {
 });
 
 // Get ticket statistics for the student
-router.get('/stats', authenticateToken, async (req, res) => {
+router.get('/stats', authenticate, async (req, res) => {
   try {
     const studentId = req.user.studentId;
     
@@ -172,7 +172,7 @@ router.get('/stats', authenticateToken, async (req, res) => {
 });
 
 // Delete a ticket (only pending tickets)
-router.delete('/tickets/:id', authenticateToken, async (req, res) => {
+router.delete('/tickets/:id', authenticate, async (req, res) => {
   try {
     const ticket = await SupportTicket.findOne({
       _id: req.params.id,

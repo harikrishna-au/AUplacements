@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const DiscussionMessage = require('../models/DiscussionMessage');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
 // Get messages for a specific channel/company
-router.get('/channel/:companyId/:channelName', authenticateToken, async (req, res) => {
+router.get('/channel/:companyId/:channelName', authenticate, async (req, res) => {
   try {
     const { companyId, channelName } = req.params;
     const { limit = 50, before } = req.query;
@@ -31,7 +31,7 @@ router.get('/channel/:companyId/:channelName', authenticateToken, async (req, re
 });
 
 // Send a message
-router.post('/send', authenticateToken, async (req, res) => {
+router.post('/send', authenticate, async (req, res) => {
   try {
     const { companyId, channelType, channelName, message, messageType, attachmentUrl, attachmentName, replyTo } = req.body;
     
@@ -67,7 +67,7 @@ router.post('/send', authenticateToken, async (req, res) => {
 });
 
 // Edit a message
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   try {
     const { message } = req.body;
     
@@ -91,7 +91,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a message
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const message = await DiscussionMessage.findOne({
       _id: req.params.id,
@@ -113,7 +113,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 });
 
 // Add reaction to a message
-router.post('/:id/react', authenticateToken, async (req, res) => {
+router.post('/:id/react', authenticate, async (req, res) => {
   try {
     const { emoji } = req.body;
     
@@ -148,7 +148,7 @@ router.post('/:id/react', authenticateToken, async (req, res) => {
 });
 
 // Get all channels for a company
-router.get('/channels/:companyId', authenticateToken, async (req, res) => {
+router.get('/channels/:companyId', authenticate, async (req, res) => {
   try {
     const channels = await DiscussionMessage.distinct('channelName', {
       companyId: req.params.companyId
@@ -161,7 +161,7 @@ router.get('/channels/:companyId', authenticateToken, async (req, res) => {
 });
 
 // Get all companies the student has access to (applied companies + general)
-router.get('/my-forums', authenticateToken, async (req, res) => {
+router.get('/my-forums', authenticate, async (req, res) => {
   try {
     const StudentApplication = require('../models/StudentApplication');
     const Company = require('../models/Company');
