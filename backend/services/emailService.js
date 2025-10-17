@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER, // Your Gmail address
-    pass: process.env.EMAIL_PASSWORD // Your Gmail App Password (not regular password)
+    pass: process.env.EMAIL_PASSWORD // Gmail App Password (not regular password)
   }
 });
 
@@ -13,24 +13,6 @@ const transporter = nodemailer.createTransport({
  * Send magic link email to student
  */
 async function sendMagicLinkEmail(email, fullName, magicLink) {
-  // Development Mode: Skip email sending and log to console
-  if (process.env.NODE_ENV === 'development') {
-    console.log('\n' + '='.repeat(70));
-    console.log('🔧 DEVELOPMENT MODE - Email Bypassed');
-    console.log('='.repeat(70));
-    console.log(`📧 To: ${email}`);
-    console.log(`👤 Name: ${fullName}`);
-    console.log(`🔗 Magic Link:\n\n   ${magicLink}\n`);
-    console.log('='.repeat(70) + '\n');
-    
-    return { 
-      success: true, 
-      messageId: 'dev-mode-' + Date.now(),
-      devMode: true 
-    };
-  }
-
-  // Production Mode: Send actual email
   try {
     const mailOptions = {
       from: `"AU Placements" <${process.env.EMAIL_USER}>`,
@@ -71,11 +53,11 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
                 <ul style="margin: 10px 0;">
                   <li>This link is valid for <strong>15 minutes</strong></li>
                   <li>It can only be used <strong>once</strong></li>
-                  <li>Don't share this link with anyone</li>
+                  <li>Do not share this link with anyone</li>
                 </ul>
               </div>
 
-              <p>If you didn't request this login link, you can safely ignore this email.</p>
+              <p>If you didn’t request this login link, you can safely ignore this email.</p>
 
               <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
               
@@ -96,11 +78,11 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('✉️  Email sent:', info.messageId);
+    console.log('✉️  Email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
 
   } catch (error) {
-    console.error('❌ Email error:', error.message);
+    console.error('❌ Email sending failed:', error.message);
     throw new Error('Failed to send email: ' + error.message);
   }
 }
@@ -109,18 +91,12 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
  * Verify email configuration
  */
 async function verifyEmailConfig() {
-  // Skip verification in development mode
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔧 Development Mode - Email service disabled (using console logging)');
-    return true;
-  }
-
   try {
     await transporter.verify();
-    console.log('✅ Email service is ready');
+    console.log('✅ Email service is ready and verified');
     return true;
   } catch (error) {
-    console.error('❌ Email service error:', error.message);
+    console.error('❌ Email service configuration failed:', error.message);
     return false;
   }
 }
