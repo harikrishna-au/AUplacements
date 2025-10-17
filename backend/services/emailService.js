@@ -1,12 +1,21 @@
 const nodemailer = require('nodemailer');
 
 // Create transporter - Configure with your Gmail
+// Using explicit settings instead of 'service: gmail' for better compatibility
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER, // Your Gmail address
     pass: process.env.EMAIL_PASSWORD // Gmail App Password (not regular password)
-  }
+  },
+  tls: {
+    rejectUnauthorized: false
+  },
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 10000,
+  socketTimeout: 30000 // 30 seconds
 });
 
 /**
