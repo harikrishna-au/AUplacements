@@ -11,9 +11,12 @@ const getStudentModel = () => {
 
 async function authenticateClerk(req, res, next) {
   try {
+    console.log('authenticateClerk started');
     const userId = req.auth.userId;
+    console.log('Clerk userId:', userId);
     
     if (!userId) {
+      console.log('No userId found in req.auth');
       return res.status(401).json({
         success: false,
         message: 'Not authenticated'
@@ -21,10 +24,12 @@ async function authenticateClerk(req, res, next) {
     }
 
     const claims = req.auth.sessionClaims || {};
+    console.log('Claims:', JSON.stringify(claims, null, 2));
     const email = claims.email || claims.email_address || claims.primary_email_address;
     const firstName = claims.first_name || claims.firstName || '';
     const lastName = claims.last_name || claims.lastName || '';
     const fullName = claims.name || [firstName, lastName].filter(Boolean).join(' ') || (email ? email.split('@')[0] : 'User');
+    console.log('Extracted email:', email, 'fullName:', fullName);
     
     const StudentModel = getStudentModel();
     let student;
@@ -95,11 +100,12 @@ async function authenticateClerk(req, res, next) {
       clerkId: userId
     };
 
-    console.log('Authentication successful for user:', {
+    console.log('✅ Authentication successful for user:', {
       userId: student._id,
       email: student.collegeEmail,
       clerkId: userId
     });
+    console.log('Calling next() to proceed to route handler');
 
     next();
   } catch (error) {

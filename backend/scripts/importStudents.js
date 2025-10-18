@@ -11,15 +11,25 @@ const mongoose = require('mongoose');
 const path = require('path');
 const { importStudentsFromExcel } = require('../utils/importStudents');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/auplacements';
+const MONGODB_URI = 'mongodb+srv://hari:root@auplacements.jzbstxr.mongodb.net/auplacements';
 const EXCEL_FILE_PATH = path.join(__dirname, '../data/students.xlsx');
 
-// Allowed branches for import
+// Allowed branches (normalized to lowercase for comparison)
 const ALLOWED_BRANCHES = [
-  'B.TECH-COMPUTER SCIENCE & ENGINEERING',
-  'B.TECH-INFORMATION TECHNOLOGY',
-  'INTEGRATED DUAL DEGREE (B.Tech+M.Tech) - CSE',
+  'b.tech-computer science & engineering',
+  'b.tech-information technology',
+  'integrated dual degree (b.tech+m.tech) - cse',
 ];
+
+function normalizeBranch(branch) {
+  if (!branch) return '';
+  return branch
+    .toString()
+    .trim()
+    .replace(/\s+/g, ' ') // collapse multiple spaces
+    .replace(/–/g, '-') // replace special hyphens
+    .toLowerCase();
+}
 
 async function run() {
   try {
@@ -33,10 +43,11 @@ async function run() {
     // Import all students from Excel
     const result = await importStudentsFromExcel(EXCEL_FILE_PATH);
 
-    // Filter based on allowed branches
-    const filteredStudents = result.students.filter(student =>
-      ALLOWED_BRANCHES.includes(student.BRANCH?.trim())
-    );
+    // Filter only allowed branches
+    const filteredStudents = result.students.filter(student => {
+      const normalized = normalizeBranch(student.BRANCH);
+      return ALLOWED_BRANCHES.includes(normalized);
+    });
 
     console.log(`📊 Total rows in file: ${result.total}`);
     console.log(`✅ Eligible for import (filtered): ${filteredStudents.length}`);
