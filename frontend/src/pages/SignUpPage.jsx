@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SignIn, useUser } from '@clerk/clerk-react';
+import { SignUp, useUser } from '@clerk/clerk-react';
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const navigate = useNavigate();
   const { isSignedIn } = useUser();
 
@@ -28,14 +28,14 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <SignIn 
+          <SignUp 
             appearance={{
               elements: {
                 rootBox: 'w-full',
                 card: 'shadow-none',
               }
             }}
-            signUpUrl="/signup"
+            signInUrl="/login"
             forceRedirectUrl="/dashboard"
             fallbackRedirectUrl="/dashboard"
           />

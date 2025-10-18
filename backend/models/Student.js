@@ -84,6 +84,11 @@ const studentSchema = new mongoose.Schema({
   // Resume
   resumeUrl: String,
   // Auth fields
+  clerkId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   lastLoginAt: Date,
   createdAt: {
     type: Date,

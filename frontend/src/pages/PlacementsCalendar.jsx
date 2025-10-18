@@ -80,17 +80,14 @@ export default function PlacementsCalendar() {
   const handleRegisterForEvent = async (event) => {
     try {
       setIsRegistering(true);
-      // Extract companyId and eventId from the event object
-      const companyId = event._raw?.companyId?._id;
       const eventId = event._raw?._id;
       
-      if (!companyId || !eventId) {
+      if (!eventId) {
         throw new Error('Invalid event data');
       }
       
-      await eventAPI.registerForEvent(companyId, eventId);
+      await eventAPI.registerForEvent(eventId);
       alert('Successfully registered for event!');
-      // Refresh events to get updated participant list
       await fetchEvents();
       setSelectedEvent(null);
     } catch (err) {

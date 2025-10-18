@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./config/database');
-const { verifyEmailConfig } = require('./services/emailService');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,35 +9,29 @@ const PORT = process.env.PORT || 3001;
 // Connect to MongoDB
 connectDB();
 
-// Verify email service on startup
-async function checkEmailService() {
-  try {
-    const result = await verifyEmailConfig();
-    if (result.ready) {
-      console.log(`✅ Email service ready (${result.provider})`);
-    } else {
-      console.warn(`⚠️  Email service not ready: ${result.message}`);
-    }
-  } catch (error) {
-    console.error('❌ Email service check failed:', error.message);
+// Verify Clerk configuration on startup
+function checkClerkConfig() {
+  if (process.env.CLERK_SECRET_KEY) {
+    console.log('✅ Clerk authentication ready');
+  } else {
+    console.warn('⚠️  Clerk not configured. Set CLERK_SECRET_KEY in .env');
   }
 }
 
-checkEmailService();
+checkClerkConfig();
 
-// Middleware - CORS Configuration (Allow all origins in development)
+// CORS Configuration
+const corsOptions = {
+  origin: (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(url => url.trim()),
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: false
+};
+app.use(cors(corsOptions));
+
+// Request logging
 app.use((req, res, next) => {
   console.log(`📨 ${req.method} ${req.url}`);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
   next();
 });
 

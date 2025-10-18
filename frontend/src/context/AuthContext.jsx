@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react';
+import { attachClerkAuth } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -12,80 +13,48 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn } = useUser();
+  const { getToken, signOut } = useClerkAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check if user is logged in on mount
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    // If we have stored user data, set it immediately (optimistic)
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        setIsAuthenticated(true);
-      } catch (e) {
-        console.error('Failed to parse stored user:', e);
+    if (clerkLoaded) {
+      if (getToken) {
+        attachClerkAuth(getToken);
       }
-    }
-
-    // Then verify with backend
-    try {
-      const response = await authAPI.getCurrentUser();
-      setUser(response.data.data);
-      setIsAuthenticated(true);
-      // Update stored user data
-      localStorage.setItem('user', JSON.stringify(response.data.data));
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
+      
+      if (isSignedIn && clerkUser) {
+        setUser({
+          id: clerkUser.id,
+          email: clerkUser.primaryEmailAddress?.emailAddress,
+          name: clerkUser.fullName || clerkUser.firstName,
+          registerNumber: clerkUser.publicMetadata?.registerNumber || '',
+        });
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     }
-  };
-
-  const login = (token, userData) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    setIsAuthenticated(true);
-  };
+  }, [clerkUser, isSignedIn, clerkLoaded, getToken]);
 
   const logout = async () => {
     try {
-      await authAPI.logout();
+      await signOut();
+      setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // Still clear user state even if signOut fails
       setUser(null);
-      setIsAuthenticated(false);
     }
   };
 
   const value = {
     user,
     loading,
-    isAuthenticated,
-    login,
+    isAuthenticated: isSignedIn,
     logout,
-    checkAuth,
+    getToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
