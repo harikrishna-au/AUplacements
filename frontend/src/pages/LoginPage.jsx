@@ -28,6 +28,9 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+            📧 Use your university email: <strong>rollnumber@andhrauniversity.edu.in</strong>
+          </div>
           <SignIn 
             appearance={{
               elements: {

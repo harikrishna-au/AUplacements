@@ -43,6 +43,15 @@ async function authenticateClerk(req, res, next) {
     const fullName = [firstName, lastName].filter(Boolean).join(' ') || clerkUser.username || (email ? email.split('@')[0] : 'User');
     console.log('Extracted email:', email, 'fullName:', fullName);
     
+    // Validate email domain - only allow @andhrauniversity.edu.in
+    if (!email || !email.endsWith('@andhrauniversity.edu.in')) {
+      console.log('❌ Unauthorized email domain:', email);
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Please register with your Andhra University email (rollnumber@andhrauniversity.edu.in)'
+      });
+    }
+    
     const StudentModel = getStudentModel();
     let student;
     
