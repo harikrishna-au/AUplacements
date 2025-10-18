@@ -7,6 +7,7 @@ const MagicLink = require('../models/MagicLink');
 const { sendMagicLinkEmail } = require('../services/emailService');
 const { generateToken, generateMagicToken, verifyToken } = require('../utils/jwt');
 const { authenticate } = require('../middleware/auth');
+const { verifyEmailConfig } = require('../services/emailService');
 
 /**
  * POST /api/auth/send-magic-link
@@ -263,6 +264,19 @@ router.post('/logout', authenticate, (req, res) => {
     success: true,
     message: 'Logged out successfully'
   });
+});
+
+/**
+ * GET /api/auth/email-health
+ * Check email provider readiness
+ */
+router.get('/email-health', async (req, res) => {
+  try {
+    const status = await verifyEmailConfig();
+    res.json({ success: true, data: status });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
 });
 
 module.exports = router;

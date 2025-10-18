@@ -11,7 +11,20 @@ const PORT = process.env.PORT || 3001;
 connectDB();
 
 // Verify email service on startup
-verifyEmailConfig();
+async function checkEmailService() {
+  try {
+    const result = await verifyEmailConfig();
+    if (result.ready) {
+      console.log(`✅ Email service ready (${result.provider})`);
+    } else {
+      console.warn(`⚠️  Email service not ready: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('❌ Email service check failed:', error.message);
+  }
+}
+
+checkEmailService();
 
 // Middleware - CORS Configuration (Allow all origins in development)
 app.use((req, res, next) => {
