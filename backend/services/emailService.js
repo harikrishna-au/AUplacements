@@ -72,7 +72,18 @@ function getTransporter() {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
-      }
+      },
+      // Optimize for production
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      rateDelta: 20000, // 20 seconds
+      rateLimit: 5, // 5 emails per rateDelta
+      connectionTimeout: 60000, // 60 seconds
+      greetingTimeout: 30000, // 30 seconds
+      socketTimeout: 60000, // 60 seconds
+      debug: process.env.NODE_ENV === 'development',
+      logger: process.env.NODE_ENV === 'development'
     });
   }
   return transporter;
@@ -95,7 +106,14 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
   };
 
   try {
-    const info = await transport.sendMail(mailOptions);
+    // Add timeout for production environments
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Email send timeout')), 30000); // 30 second timeout
+    });
+    
+    const sendPromise = transport.sendMail(mailOptions);
+    const info = await Promise.race([sendPromise, timeoutPromise]);
+    
     console.log(`✅ Email sent successfully via Gmail:`, info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
@@ -106,6 +124,10 @@ async function sendMagicLinkEmail(email, fullName, magicLink) {
       throw new Error('Gmail authentication failed. Please check your EMAIL_USER and EMAIL_PASSWORD. Make sure you\'re using an App Password, not your regular Gmail password.');
     } else if (error.message.includes('Less secure app access')) {
       throw new Error('Gmail security settings blocking access. Please enable "Less secure app access" or use an App Password.');
+    } else if (error.message.includes('timeout')) {
+      throw new Error('Email service timeout. Please try again.');
+    } else if (error.message.includes('ECONNRESET') || error.message.includes('ENOTFOUND')) {
+      throw new Error('Network connection issue. Please check your internet connection and try again.');
     } else {
       throw new Error(`Gmail email failed: ${error.message}`);
     }
@@ -127,7 +149,20 @@ async function verifyEmailConfig() {
   }
 }
 
+// Cleanup function for production
+function closeTransporter() {
+  if (transporter) {
+    transporter.close();
+    transporter = null;
+  }
+}
+
+// Handle process termination
+process.on('SIGINT', closeTransporter);
+process.on('SIGTERM', closeTransporter);
+
 module.exports = {
   sendMagicLinkEmail,
-  verifyEmailConfig
+  verifyEmailConfig,
+  closeTransporter
 };
