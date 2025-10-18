@@ -1,12 +1,21 @@
 const { ClerkExpressRequireAuth, clerkClient } = require('@clerk/clerk-sdk-node');
 
-// Lazy load Student model
+// Lazy load models
 let Student;
+let StudentProfile;
+
 const getStudentModel = () => {
   if (!Student) {
     Student = require('../models/Student');
   }
   return Student;
+};
+
+const getStudentProfileModel = () => {
+  if (!StudentProfile) {
+    StudentProfile = require('../models/StudentProfile');
+  }
+  return StudentProfile;
 };
 
 async function authenticateClerk(req, res, next) {
@@ -77,6 +86,26 @@ async function authenticateClerk(req, res, next) {
             fullName: fullName,
             universityRegisterNumber: email.split('@')[0],
           });
+          console.log('✅ Created new Student:', student._id);
+          
+          // Create StudentProfile for new student
+          const StudentProfileModel = getStudentProfileModel();
+          const newProfile = await StudentProfileModel.create({
+            studentId: student._id,
+            universityRegisterNumber: student.universityRegisterNumber,
+            fullName: student.fullName,
+            collegeEmail: student.collegeEmail,
+            academicDetails: {
+              cgpa: '',
+              activeBacklogs: 0,
+              historyOfBacklogs: 0
+            },
+            activityLog: {
+              lastLogin: new Date(),
+              totalLogins: 1
+            }
+          });
+          console.log('✅ Created StudentProfile:', newProfile._id);
         } catch (createError) {
           console.error('Error creating student:', createError);
           return res.status(500).json({
@@ -92,6 +121,21 @@ async function authenticateClerk(req, res, next) {
         success: false,
         message: 'Student profile not found'
       });
+    }
+    
+    // Update StudentProfile login stats on every login
+    try {
+      const StudentProfileModel = getStudentProfileModel();
+      await StudentProfileModel.findOneAndUpdate(
+        { studentId: student._id },
+        {
+          $set: { 'activityLog.lastLogin': new Date() },
+          $inc: { 'activityLog.totalLogins': 1 }
+        },
+        { upsert: true }
+      );
+    } catch (profileError) {
+      console.error('Error updating profile login stats:', profileError);
     }
 
     req.user = {

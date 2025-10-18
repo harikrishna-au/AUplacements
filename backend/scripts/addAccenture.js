@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 require('dotenv').config({ path: '../.env' });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/auplacements')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://hari:root@auplacements.jzbstxr.mongodb.net/auplacements')
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
