@@ -8,12 +8,15 @@ const { authenticate } = require('../middleware/auth');
 // Get all active companies
 router.get('/companies', authenticate, async (req, res) => {
   try {
+    console.log('Fetching companies for user:', req.user?.email);
     const companies = await Company.find({ isActive: true })
       .select('name logo description industry rolesOffered eligibilityCriteria stats')
       .sort({ name: 1 });
     
+    console.log(`Found ${companies.length} companies`);
     res.json(companies);
   } catch (error) {
+    console.error('Error fetching companies:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -34,14 +37,17 @@ router.get('/companies/:id', authenticate, async (req, res) => {
 // Get student's applications (their personal pipeline)
 router.get('/my-applications', authenticate, async (req, res) => {
   try {
+    console.log('Fetching applications for student:', req.user?.studentId);
     const applications = await StudentApplication.find({ 
       studentId: req.user.studentId 
     })
     .populate('companyId', 'name logo rolesOffered recruitmentStages')
     .sort({ appliedDate: -1 });
     
+    console.log(`Found ${applications.length} applications`);
     res.json(applications);
   } catch (error) {
+    console.error('Error fetching applications:', error);
     res.status(500).json({ message: error.message });
   }
 });
