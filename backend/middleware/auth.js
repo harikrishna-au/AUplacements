@@ -1,4 +1,4 @@
-const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
+const { ClerkExpressRequireAuth, clerkClient } = require('@clerk/clerk-sdk-node');
 
 // Lazy load Student model
 let Student;
@@ -23,12 +23,15 @@ async function authenticateClerk(req, res, next) {
       });
     }
 
-    const claims = req.auth.sessionClaims || {};
-    console.log('Claims:', JSON.stringify(claims, null, 2));
-    const email = claims.email || claims.email_address || claims.primary_email_address;
-    const firstName = claims.first_name || claims.firstName || '';
-    const lastName = claims.last_name || claims.lastName || '';
-    const fullName = claims.name || [firstName, lastName].filter(Boolean).join(' ') || (email ? email.split('@')[0] : 'User');
+    // Fetch user details from Clerk API since JWT doesn't include email
+    console.log('Fetching user details from Clerk API...');
+    const clerkUser = await clerkClient.users.getUser(userId);
+    console.log('Clerk user:', clerkUser.emailAddresses);
+    
+    const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+    const firstName = clerkUser.firstName || '';
+    const lastName = clerkUser.lastName || '';
+    const fullName = [firstName, lastName].filter(Boolean).join(' ') || clerkUser.username || (email ? email.split('@')[0] : 'User');
     console.log('Extracted email:', email, 'fullName:', fullName);
     
     const StudentModel = getStudentModel();
