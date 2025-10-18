@@ -114,19 +114,17 @@ async function authenticateClerk(req, res, next) {
 module.exports = {
   clerkMiddleware: ClerkExpressRequireAuth(),
   authenticateClerk,
-  authenticate: async (req, res, next) => {
+  authenticate: (req, res, next) => {
     console.log('Authentication middleware called for:', req.method, req.path);
-    try {
-      await ClerkExpressRequireAuth()(req, res, async () => {
-        await authenticateClerk(req, res, next);
-      });
-      console.log('Authentication middleware completed successfully');
-    } catch (error) {
-      console.error('Authentication middleware error:', error);
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication failed'
-      });
-    }
+    ClerkExpressRequireAuth()(req, res, (err) => {
+      if (err) {
+        console.error('Clerk auth error:', err);
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication failed'
+        });
+      }
+      authenticateClerk(req, res, next);
+    });
   }
 };
