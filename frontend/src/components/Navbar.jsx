@@ -17,9 +17,9 @@ function Navbar() {
   const inactiveBase = 'text-gray-300 hover:bg-gray-700 hover:text-white';
 
   return (
-    <nav className="bg-gray-800">
-      <div className="w-full px-3 sm:px-4 lg:px-8">
-        <div className="flex h-12 items-center justify-between">
+    <nav className="bg-gray-800 w-full">
+      <div className="w-full px-4">
+        <div className="flex h-16 items-center justify-between">
           {/* Left brand + desktop links */}
           <div className="flex items-center">
             <button
