@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { applicationAPI } from '../services/api';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Circle, Clock, XCircle, ArrowRight, Loader2, RefreshCw } from "lucide-react";
-import axios from 'axios';
 
 export default function CompanyPipeline() {
   const navigate = useNavigate();
@@ -29,15 +29,17 @@ export default function CompanyPipeline() {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3001/api/applications/my-applications', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setApplications(response.data);
+      const response = await applicationAPI.getMyApplications();
+      setApplications(response.data || []);
       setError(null);
     } catch (err) {
       console.error('Error fetching applications:', err);
-      setError('Failed to load applications. Make sure backend is running.');
+      if (err.response?.status === 404 || err.response?.data?.message?.includes('No applications')) {
+        setApplications([]);
+        setError(null);
+      } else {
+        setError('Failed to load applications');
+      }
     } finally {
       setLoading(false);
     }
@@ -45,11 +47,13 @@ export default function CompanyPipeline() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3001/api/applications/my-stats', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await applicationAPI.getMyStats();
+      setStats(response.data || {
+        totalApplications: 0,
+        inProgress: 0,
+        selected: 0,
+        rejected: 0
       });
-      setStats(response.data);
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
