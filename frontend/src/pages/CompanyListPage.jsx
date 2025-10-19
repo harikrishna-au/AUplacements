@@ -21,13 +21,20 @@ export default function CompanyListPage() {
 
   useEffect(() => {
     fetchCompanies();
-    fetchMyApplications();
   }, []);
 
   const fetchCompanies = async () => {
     try {
-      const response = await companyAPI.getAllCompanies();
-      setCompanies(response.data);
+      const [companiesRes, applicationsRes] = await Promise.all([
+        companyAPI.getAllCompanies(),
+        applicationAPI.getMyApplications()
+      ]);
+      
+      console.log('Companies:', companiesRes.data);
+      console.log('My Applications:', applicationsRes.data);
+      
+      setCompanies(companiesRes.data);
+      setMyApplications(applicationsRes.data);
     } catch (err) {
       console.error('Error fetching companies:', err);
     } finally {
@@ -45,16 +52,18 @@ export default function CompanyListPage() {
   };
 
   const hasApplied = (companyId) => {
-    return myApplications.some(app => app.companyId?._id === companyId);
+    const applied = myApplications.some(app => app.companyId?._id === companyId);
+    console.log(`Checking company ${companyId}: Applied = ${applied}`);
+    return applied;
   };
 
   const handleApply = async (companyId) => {
     try {
       setApplying(prev => ({ ...prev, [companyId]: true }));
       await applicationAPI.applyToCompany(companyId);
-      await fetchMyApplications();
       alert('Successfully applied!');
       setIsModalOpen(false);
+      await fetchCompanies();
     } catch (err) {
       console.error('Error applying:', err);
       alert(err.response?.data?.message || 'Failed to apply');

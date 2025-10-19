@@ -230,6 +230,19 @@ export default function FeedbackSupport() {
             formatDate={formatDate}
           />
         </div>
+
+        {/* Footer */}
+        <div className="mt-16 pt-8 border-t border-gray-200">
+          <div className="text-center">
+            <p className="text-gray-600 text-sm">
+              Developed with <span className="text-red-500 animate-pulse inline-block">❤️</span> by{' '}
+              <span className="font-semibold text-indigo-600">Hari Krishna</span>
+            </p>
+            <p className="text-gray-400 text-xs mt-2">
+              © {new Date().getFullYear()} AU Placements Portal. All rights reserved.
+            </p>
+          </div>
+        </div>
       </main>
     </div>
   );

@@ -60,16 +60,14 @@ router.get('/', authenticate, async (req, res) => {
 // Get events for student (based on their applications and eligibility)
 router.get('/my-events', authenticate, async (req, res) => {
   try {
-    const StudentProfile = require('../models/StudentProfile');
+    const StudentApplication = require('../models/StudentApplication');
     const Company = require('../models/Company');
     
     console.log('📅 Fetching events for student:', req.user.studentId);
     
-    // Get student profile with applied companies
-    const studentProfile = await StudentProfile.findById(req.user.studentId);
-    
-    // Get applied company IDs from StudentProfile
-    const appliedCompanyIds = studentProfile?.placementStats?.companiesApplied || [];
+    // Get applied company IDs from StudentApplication
+    const applications = await StudentApplication.find({ studentId: req.user.studentId }).select('companyId');
+    const appliedCompanyIds = applications.map(app => app.companyId);
     console.log('📅 Applied company IDs:', appliedCompanyIds);
     
     // Get companies with events that student has applied to
