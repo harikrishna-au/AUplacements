@@ -5,9 +5,11 @@ import { applicationAPI, resourceAPI } from '../services/api';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Search, RefreshCw, Upload, AlertCircle } from "lucide-react";
+import { BookOpen, Search, Upload, AlertCircle } from "lucide-react";
 import ResourceCard from '../components/ResourceCard';
 import UploadResourceModal from '../components/UploadResourceModal';
+import CompanyLogo from '../components/CompanyLogo';
+import RefreshButton from '../components/RefreshButton';
 
 export default function ResourcesPage() {
   const navigate = useNavigate();
@@ -173,49 +175,43 @@ export default function ResourcesPage() {
   const resourceCount = filteredResources.length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen pt-20">
       
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-6 md:py-8">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-200/50 py-6 md:py-8">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">📚 Placement Resources</h1>
-              <p className="text-teal-100">
+              <h1 className="text-3xl font-bold mb-2 text-gray-900">📚 Placement Resources</h1>
+              <p className="text-gray-600">
                 Company-wise study materials, guides, and preparation resources from your pipeline
               </p>
             </div>
-            <Button
-              onClick={fetchResources}
-              className="bg-white text-teal-600 hover:bg-teal-50"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
+            <RefreshButton onClick={fetchResources} loading={loading} />
           </div>
           
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="text-2xl font-bold">{companies.length - 1}</div>
-              <div className="text-sm text-teal-100">Companies</div>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+              <div className="text-2xl font-bold text-gray-900">{companies.length - 1}</div>
+              <div className="text-sm text-gray-600">Companies</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="text-2xl font-bold">{resources.length}</div>
-              <div className="text-sm text-teal-100">Total Resources</div>
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
+              <div className="text-2xl font-bold text-gray-900">{resources.length}</div>
+              <div className="text-sm text-gray-600">Total Resources</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="text-2xl font-bold">
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-100">
+              <div className="text-2xl font-bold text-gray-900">
                 {resources.filter(r => r.resourceType === 'PDF' || r.resourceType === 'document').length}
               </div>
-              <div className="text-sm text-teal-100">PDF Documents</div>
+              <div className="text-sm text-gray-600">PDF Documents</div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="text-2xl font-bold">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+              <div className="text-2xl font-bold text-gray-900">
                 {resources.filter(r => r.resourceType === 'video').length}
               </div>
-              <div className="text-sm text-teal-100">Video Tutorials</div>
+              <div className="text-sm text-gray-600">Video Tutorials</div>
             </div>
           </div>
         </div>
@@ -234,7 +230,7 @@ export default function ResourcesPage() {
               <CardContent className="p-0">
                 {loading && companies.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
                     Loading...
                   </div>
                 ) : companies.length === 0 ? (
@@ -256,11 +252,19 @@ export default function ResourcesPage() {
                         key={company.id}
                         onClick={() => handleCompanyChange(company.id)}
                         className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                          selectedCompany === company.id ? 'bg-teal-50 border-l-4 border-teal-600' : ''
+                          selectedCompany === company.id ? 'bg-indigo-50 border-l-4 border-indigo-600' : ''
                         }`}
                       >
                         <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{company.logo}</span>
+                          {company.id === 'all' ? (
+                            <span className="text-2xl">{company.logo}</span>
+                          ) : (
+                            <CompanyLogo 
+                              logo={company.logo}
+                              companyName={company.name}
+                              size="sm"
+                            />
+                          )}
                           <div>
                             <div className="font-medium text-gray-900">{company.name}</div>
                             {company.currentStage && (
@@ -269,7 +273,7 @@ export default function ResourcesPage() {
                           </div>
                         </div>
                         {selectedCompany === company.id && company.id !== 'all' && (
-                          <div className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded">
+                          <div className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
                             {resources.filter(r => r.companyId._id === company.id).length}
                           </div>
                         )}
@@ -310,7 +314,7 @@ export default function ResourcesPage() {
               {(selectedCompany !== 'all' && companies.length > 0) ? (
                 <Button
                   onClick={() => setShowUploadModal(true)}
-                  className="bg-teal-600 hover:bg-teal-700"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Resource
@@ -330,7 +334,7 @@ export default function ResourcesPage() {
             {/* Loading State */}
             {loading && (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
               </div>
             )}
 
@@ -384,7 +388,7 @@ export default function ResourcesPage() {
                   </p>
                   <Button
                     onClick={() => navigate('/pipeline')}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                   >
                     Browse Companies
                   </Button>

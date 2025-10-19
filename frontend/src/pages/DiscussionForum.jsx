@@ -1,17 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { discussionAPI } from '../services/api';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Send, Hash, MessageCircle, RefreshCw, Loader2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import ForumCompanyList from '../components/ForumCompanyList';
+import ForumChannelList from '../components/ForumChannelList';
+import ForumChatArea from '../components/ForumChatArea';
+import RefreshButton from '../components/RefreshButton';
 
 export default function DiscussionForum() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const messagesEndRef = useRef(null);
   
   // Get company and channel from URL params
   const urlCompanyId = searchParams.get('company');
@@ -39,10 +41,7 @@ export default function DiscussionForum() {
     }
   }, [selectedCompany, selectedChannel]);
 
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+
 
   // Set initial company and channel from URL
   useEffect(() => {
@@ -117,16 +116,7 @@ export default function DiscussionForum() {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const handleCompanySelect = (forum) => {
     setSelectedCompany(forum);
@@ -155,20 +145,17 @@ export default function DiscussionForum() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+    <div className="min-h-screen pt-20">
       
 
       <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="mb-4 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Discussion Forums</h2>
-            <p className="text-gray-600 mt-2">Connect with peers and discuss company placements</p>
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900">Discussion Forums</h2>
+            <p className="text-sm md:text-base text-gray-600 mt-1">Connect with peers</p>
           </div>
-          <Button onClick={fetchForums} variant="outline" disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          <RefreshButton onClick={fetchForums} loading={loading} />
         </div>
 
         {/* Error Message */}
@@ -204,155 +191,38 @@ export default function DiscussionForum() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Companies Sidebar */}
-            <div className="lg:col-span-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5" />
-                    Companies
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 max-h-[600px] overflow-y-auto">
-                  {forums.map((forum) => (
-                    <button
-                      key={forum.companyId}
-                      onClick={() => handleCompanySelect(forum)}
-                      className={`w-full text-left p-3 rounded-lg transition-colors ${
-                        selectedCompany?.companyId === forum.companyId
-                          ? 'bg-indigo-100 border-2 border-indigo-500'
-                          : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {forum.companyLogo ? (
-                          <img src={forum.companyLogo} alt={forum.companyName} className="w-8 h-8 object-contain" />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
-                            {forum.companyName.charAt(0)}
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm truncate">{forum.companyName}</p>
-                          {forum.hasApplied && !forum.isGeneral && (
-                            <span className="text-xs text-green-600">✓ Applied</span>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
+          <div className="space-y-4">
+            {/* Company Tabs */}
+            <ForumCompanyList
+              forums={forums}
+              selectedCompany={selectedCompany}
+              onCompanySelect={handleCompanySelect}
+            />
 
-            {/* Channels Sidebar */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Hash className="h-5 w-5" />
-                    Channels
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {selectedCompany?.channels.map((channel) => (
-                    <button
-                      key={channel.name}
-                      onClick={() => handleChannelSelect(channel.name)}
-                      className={`w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-2 ${
-                        selectedChannel === channel.name
-                          ? 'bg-indigo-100 text-indigo-900 font-semibold'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <span>{channel.icon}</span>
-                      <span className="text-sm">{channel.displayName}</span>
-                    </button>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Chat Area */}
-            <div className="lg:col-span-7">
-              <Card className="flex flex-col" style={{ minHeight: '60vh' }}>
-                <CardHeader className="border-b">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        {selectedCompany?.channels.find(c => c.name === selectedChannel)?.icon}
-                        {selectedCompany?.companyName} - {selectedCompany?.channels.find(c => c.name === selectedChannel)?.displayName}
-                      </CardTitle>
-                    </div>
-                    <Button size="sm" variant="outline" onClick={fetchMessages} disabled={messagesLoading}>
-                      <RefreshCw className={`h-4 w-4 ${messagesLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                  </div>
-                </CardHeader>
-                
-                {/* Messages */}
-                <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {messagesLoading ? (
-                    <div className="flex items-center justify-center h-full">
-                      <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                    </div>
-                  ) : messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                      <MessageCircle className="h-16 w-16 mb-4 opacity-50" />
-                      <p>No messages yet. Start the conversation!</p>
-                    </div>
-                  ) : (
-                    messages.map((msg) => (
-                      <div key={msg._id} className="flex gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold flex-shrink-0">
-                          {msg.senderId?.fullName?.charAt(0) || '?'}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-baseline gap-2">
-                            <span className="font-semibold text-gray-900">
-                              {msg.senderId?.fullName || 'Unknown User'}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {msg.senderId?.universityRegisterNumber || 'N/A'}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              {formatTimestamp(msg.createdAt)}
-                            </span>
-                          </div>
-                          <p className="text-gray-700 mt-1 whitespace-pre-wrap">{msg.message}</p>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  <div ref={messagesEndRef} />
-                </CardContent>
-
-                {/* Message Input */}
-                <div className="border-t p-4">
-                  <div className="flex gap-2">
-                    <Input
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder={`Message #${selectedCompany?.channels.find(c => c.name === selectedChannel)?.displayName || 'channel'}...`}
-                      disabled={sending || !selectedCompany}
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={sending || !message.trim() || !selectedCompany}
-                      className="bg-indigo-600 hover:bg-indigo-700"
-                    >
-                      {sending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Send className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+            {/* Channel Tabs + Chat Area */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="w-full md:w-48 md:flex-shrink-0">
+                <ForumChannelList
+                  channels={selectedCompany?.channels}
+                  selectedChannel={selectedChannel}
+                  onChannelSelect={handleChannelSelect}
+                />
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <ForumChatArea
+                  selectedCompany={selectedCompany}
+                  selectedChannel={selectedChannel}
+                  messages={messages}
+                  messagesLoading={messagesLoading}
+                  message={message}
+                  setMessage={setMessage}
+                  sending={sending}
+                  onSendMessage={handleSendMessage}
+                  onRefresh={fetchMessages}
+                  formatTimestamp={formatTimestamp}
+                />
+              </div>
             </div>
           </div>
         )}

@@ -1,6 +1,11 @@
 # 🎓 AU Placements Portal
 
-A comprehensive placement management system for Andhra University students to track companies, manage applications, access resources, and stay updated with placement events.
+A modern, full-stack placement management system for Andhra University students featuring real-time updates, responsive design, and comprehensive placement tracking.
+
+![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
+![React](https://img.shields.io/badge/React-v19.1.1-blue)
+![MongoDB](https://img.shields.io/badge/MongoDB-v8.19.1-brightgreen)
+![License](https://img.shields.io/badge/License-ISC-yellow)
 
 ## 🌟 Features
 

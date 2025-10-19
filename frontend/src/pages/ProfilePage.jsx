@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { studentAPI } from '../services/api';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, FileText, ExternalLink } from "lucide-react";
+import ProfileSection from '../components/ProfileSection';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -40,7 +38,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center px-3 sm:px-4">
+    <div className="min-h-screen pt-20 flex items-center justify-center px-3 sm:px-4">
         <div className="text-center">
           <Loader2 className="inline-block h-16 w-16 animate-spin text-indigo-600 mb-4" />
           <p className="text-gray-600">Loading profile...</p>
@@ -50,7 +48,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+    <div className="min-h-screen pt-20">
       
 
       <main className="w-full px-3 sm:px-4 lg:px-8 py-6 md:py-8">
@@ -71,346 +69,83 @@ export default function ProfilePage() {
         )}
 
         <div className="space-y-6">
-          {/* Basic Information (Read-only) */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-              <CardDescription>This information is from your university records and cannot be edited</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    value={studentData?.fullName || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="registerNumber">University Register Number</Label>
-                  <Input
-                    id="registerNumber"
-                    value={studentData?.universityRegisterNumber || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">College Email</Label>
-                  <Input
-                    id="email"
-                    value={studentData?.collegeEmail || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="personalEmail">Personal Email</Label>
-                  <Input
-                    id="personalEmail"
-                    value={studentData?.personalEmail || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="branch">Branch</Label>
-                  <Input
-                    id="branch"
-                    value={studentData?.branch || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="course">Course</Label>
-                  <Input
-                    id="course"
-                    value={studentData?.course || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="gender">Gender</Label>
-                  <Input
-                    id="gender"
-                    value={studentData?.gender || ''}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="btechYearOfPass">B.Tech Year of Passing</Label>
-                  <Input
-                    id="btechYearOfPass"
-                    value={studentData?.btechYearOfPass || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProfileSection
+            title="Basic Information"
+            description="This information is from your university records"
+            studentData={studentData}
+            fields={[
+              { id: 'fullName', label: 'Full Name', key: 'fullName' },
+              { id: 'registerNumber', label: 'Register Number', key: 'universityRegisterNumber' },
+              { id: 'email', label: 'College Email', key: 'collegeEmail' },
+              { id: 'personalEmail', label: 'Personal Email', key: 'personalEmail' },
+              { id: 'branch', label: 'Branch', key: 'branch' },
+              { id: 'course', label: 'Course', key: 'course' },
+              { id: 'gender', label: 'Gender', key: 'gender' },
+              { id: 'btechYear', label: 'B.Tech Year of Passing', key: 'btechYearOfPass' }
+            ]}
+          />
 
-          {/* Academic Performance (Read-only) */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Academic Performance</CardTitle>
-              <CardDescription>Your current academic standing</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="cgpa">CGPA</Label>
-                  <Input
-                    id="cgpa"
-                    value={studentData?.cgpa || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="activeBacklogs">Active Backlogs</Label>
-                  <Input
-                    id="activeBacklogs"
-                    value={studentData?.activeBacklogs || '0'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="historyBacklogs">History of Backlogs</Label>
-                  <Input
-                    id="historyBacklogs"
-                    value={studentData?.historyOfBacklogs || '0'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="completedInTime">Completed in Time</Label>
-                  <Input
-                    id="completedInTime"
-                    value={studentData?.completedInTime || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="admissionTest">Admission Test</Label>
-                  <Input
-                    id="admissionTest"
-                    value={studentData?.admissionEntranceTest || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="entranceRank">Entrance Test Rank</Label>
-                  <Input
-                    id="entranceRank"
-                    value={studentData?.entranceTestRank || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProfileSection
+            title="Academic Performance"
+            description="Your current academic standing"
+            studentData={studentData}
+            fields={[
+              { id: 'cgpa', label: 'CGPA', key: 'cgpa' },
+              { id: 'activeBacklogs', label: 'Active Backlogs', key: 'activeBacklogs' },
+              { id: 'historyBacklogs', label: 'History of Backlogs', key: 'historyOfBacklogs' },
+              { id: 'completedInTime', label: 'Completed in Time', key: 'completedInTime' },
+              { id: 'admissionTest', label: 'Admission Test', key: 'admissionEntranceTest' },
+              { id: 'entranceRank', label: 'Entrance Test Rank', key: 'entranceTestRank' }
+            ]}
+          />
 
-          {/* Contact Information (Read-only) */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-              <CardDescription>Your contact details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={studentData?.phoneNumber || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="currentAddress">Current Address</Label>
-                  <Textarea
-                    id="currentAddress"
-                    value={studentData?.currentAddress || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                    rows={2}
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="permanentAddress">Permanent Address</Label>
-                  <Textarea
-                    id="permanentAddress"
-                    value={studentData?.permanentAddress || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                    rows={2}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProfileSection
+            title="Contact Information"
+            description="Your contact details"
+            studentData={studentData}
+            fields={[
+              { id: 'phoneNumber', label: 'Phone Number', key: 'phoneNumber' },
+              { id: 'currentAddress', label: 'Current Address', key: 'currentAddress', type: 'textarea', fullWidth: true },
+              { id: 'permanentAddress', label: 'Permanent Address', key: 'permanentAddress', type: 'textarea', fullWidth: true }
+            ]}
+          />
 
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Previous Education</CardTitle>
-              <CardDescription>Your 10th, 12th/Diploma details and percentages</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="tenthPercentage">10th Percentage/CGPA</Label>
-                  <Input
-                    id="tenthPercentage"
-                    value={studentData?.tenthPercentage || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tenthBoard">10th Board</Label>
-                  <Input
-                    id="tenthBoard"
-                    value={studentData?.tenthBoard || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tenthYear">10th Year of Pass</Label>
-                  <Input
-                    id="tenthYear"
-                    value={studentData?.tenthYearOfPass || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="twelfthPercentage">12th Percentage</Label>
-                  <Input
-                    id="twelfthPercentage"
-                    value={studentData?.twelfthPercentage || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="twelfthBoard">12th Board</Label>
-                  <Input
-                    id="twelfthBoard"
-                    value={studentData?.twelfthBoard || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="diplomaPercentage">Diploma Percentage</Label>
-                  <Input
-                    id="diplomaPercentage"
-                    value={studentData?.diplomaPercentage || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProfileSection
+            title="Previous Education"
+            description="Your 10th, 12th/Diploma details"
+            studentData={studentData}
+            fields={[
+              { id: 'tenthPercentage', label: '10th Percentage/CGPA', key: 'tenthPercentage' },
+              { id: 'tenthBoard', label: '10th Board', key: 'tenthBoard' },
+              { id: 'tenthYear', label: '10th Year of Pass', key: 'tenthYearOfPass' },
+              { id: 'twelfthPercentage', label: '12th Percentage', key: 'twelfthPercentage' },
+              { id: 'twelfthBoard', label: '12th Board', key: 'twelfthBoard' },
+              { id: 'diplomaPercentage', label: 'Diploma Percentage', key: 'diplomaPercentage' }
+            ]}
+          />
 
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Online Presence</CardTitle>
-              <CardDescription>Your portfolio and social links</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="portfolioUrl">Portfolio URL</Label>
-                  <Input
-                    id="portfolioUrl"
-                    value={studentData?.portfolioUrl || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
-                  <Input
-                    id="linkedinUrl"
-                    value={studentData?.linkedinUrl || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="githubUrl">GitHub URL</Label>
-                  <Input
-                    id="githubUrl"
-                    value={studentData?.githubUrl || 'N/A'}
-                    disabled
-                    className="bg-muted"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProfileSection
+            title="Online Presence"
+            description="Your portfolio and social links"
+            studentData={studentData}
+            fields={[
+              { id: 'portfolioUrl', label: 'Portfolio URL', key: 'portfolioUrl' },
+              { id: 'linkedinUrl', label: 'LinkedIn URL', key: 'linkedinUrl' },
+              { id: 'githubUrl', label: 'GitHub URL', key: 'githubUrl' }
+            ]}
+          />
 
-          <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Additional Information</CardTitle>
-                <CardDescription>Other details from your records (Read-only)</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="hasPAN">Has PAN Card</Label>
-                    <Input
-                      id="hasPAN"
-                      value={studentData?.hasPAN || 'N/A'}
-                      disabled
-                      className="bg-muted"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hasPassport">Has Passport</Label>
-                    <Input
-                      id="hasPassport"
-                      value={studentData?.hasPassport || 'N/A'}
-                      disabled
-                      className="bg-muted"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hasLaptop">Has Laptop</Label>
-                    <Input
-                      id="hasLaptop"
-                      value={studentData?.hasLaptop || 'N/A'}
-                      disabled
-                      className="bg-muted"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hasInternet">Has Internet Access</Label>
-                    <Input
-                      id="hasInternet"
-                      value={studentData?.hasInternet || 'N/A'}
-                      disabled
-                      className="bg-muted"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <ProfileSection
+            title="Additional Information"
+            description="Other details from your records"
+            studentData={studentData}
+            fields={[
+              { id: 'hasPAN', label: 'Has PAN Card', key: 'hasPAN' },
+              { id: 'hasPassport', label: 'Has Passport', key: 'hasPassport' },
+              { id: 'hasLaptop', label: 'Has Laptop', key: 'hasLaptop' },
+              { id: 'hasInternet', label: 'Has Internet Access', key: 'hasInternet' }
+            ]}
+          />
 
           {/* Resume (Read-only) */}
           <Card className="mt-6">
