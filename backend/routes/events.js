@@ -35,33 +35,58 @@ router.get('/', authenticate, async (req, res) => {
 // Get events for student (based on their applications and eligibility)
 router.get('/my-events', authenticate, async (req, res) => {
   try {
-    const StudentApplication = require('../models/StudentApplication');
-    const Student = require('../models/Student');
+    const StudentProfile = require('../models/StudentProfile');
+    const Company = require('../models/Company');
     
-    // Get student details
-    const student = await Student.findById(req.user.studentId);
+    console.log('📅 Fetching events for student:', req.user.studentId);
     
-    // Get student's applied companies
-    const applications = await StudentApplication.find({
-      studentId: req.user.studentId
-    }).select('companyId');
+    // Get student profile with applied companies
+    const studentProfile = await StudentProfile.findById(req.user.studentId);
     
-    const appliedCompanyIds = applications.map(app => app.companyId);
+    // Get applied company IDs from StudentProfile
+    const appliedCompanyIds = studentProfile?.placementStats?.companiesApplied || [];
+    console.log('📅 Applied company IDs:', appliedCompanyIds);
     
-    // Get events for applied companies or matching eligibility
-    const events = await PlacementEvent.find({
-      $or: [
-        { companyId: { $in: appliedCompanyIds } },
-        { eligibleBranches: student.branch },
-        { eligibleBranches: { $size: 0 } } // Events open to all
-      ],
-      status: { $ne: EVENT_STATUS.CANCELLED }
-    })
-    .populate('companyId', 'name logo')
-    .sort({ startDate: 1 });
+    // Get companies with events that student has applied to
+    const companies = await Company.find({
+      _id: { $in: appliedCompanyIds },
+      'events.0': { $exists: true } // Has at least one event
+    });
     
-    res.json(events);
+    console.log('📅 Found companies with events:', companies.length);
+    
+    // Extract all events from companies
+    const allEvents = [];
+    companies.forEach(company => {
+      company.events.forEach(event => {
+        allEvents.push({
+          _id: event._id,
+          title: event.title,
+          type: event.type,
+          description: event.description,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          location: event.location,
+          mode: event.mode,
+          maxCapacity: event.maxCapacity,
+          participants: event.participants,
+          companyId: {
+            _id: company._id,
+            name: company.name,
+            logo: company.logo
+          }
+        });
+      });
+    });
+    
+    // Sort by start date
+    allEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+    
+    console.log('📅 Total events found:', allEvents.length);
+    
+    res.json(allEvents);
   } catch (error) {
+    console.error('📅 Error fetching events:', error);
     res.status(500).json({ message: error.message });
   }
 });

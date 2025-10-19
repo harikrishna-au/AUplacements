@@ -91,6 +91,16 @@ router.post('/apply', authenticate, async (req, res) => {
     company.stats.totalApplications += 1;
     await company.save();
     
+    // Update StudentProfile with company application
+    const StudentProfile = require('../models/StudentProfile');
+    await StudentProfile.findByIdAndUpdate(
+      req.user.studentId,
+      {
+        $addToSet: { 'placementStats.companiesApplied': companyId },
+        $inc: { 'placementStats.totalApplications': 1 }
+      }
+    );
+    
     res.status(201).json(application);
   } catch (error) {
     res.status(500).json({ message: error.message });
