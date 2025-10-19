@@ -10,8 +10,8 @@ const supportTicketSchema = new mongoose.Schema({
   },
   ticketNumber: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
+    sparse: true
   },
   type: {
     type: String,
@@ -65,12 +65,21 @@ const supportTicketSchema = new mongoose.Schema({
   }
 });
 
-// Generate ticket number automatically
-supportTicketSchema.pre('save', async function(next) {
+// Generate ticket number automatically before validation
+supportTicketSchema.pre('validate', async function(next) {
   if (!this.ticketNumber) {
-    const count = await mongoose.model('SupportTicket').countDocuments();
-    this.ticketNumber = `TICKET-${String(count + 1).padStart(6, '0')}`;
+    try {
+      const Counter = require('./Counter');
+      const seq = await Counter.getNextSequence('ticketNumber');
+      this.ticketNumber = `TICKET-${String(seq).padStart(6, '0')}`;
+    } catch (error) {
+      return next(error);
+    }
   }
+  next();
+});
+
+supportTicketSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });

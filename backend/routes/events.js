@@ -1,32 +1,57 @@
 const express = require('express');
 const router = express.Router();
-const PlacementEvent = require('../models/PlacementEvent');
-const { EVENT_STATUS } = require('../utils/constants');
 const { authenticate } = require('../middleware/auth');
 
-// Get all events
+// Get all events from companies
 router.get('/', authenticate, async (req, res) => {
   try {
+    const Company = require('../models/Company');
     const { startDate, endDate, companyId } = req.query;
     
-    let query = {};
+    let query = { 'events.0': { $exists: true } };
     
     if (companyId) {
-      query.companyId = companyId;
+      query._id = companyId;
     }
     
-    if (startDate && endDate) {
-      query.startDate = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
-      };
-    }
+    const companies = await Company.find(query).select('name logo events');
     
-    const events = await PlacementEvent.find(query)
-      .populate('companyId', 'name logo')
-      .sort({ startDate: 1 });
+    const allEvents = [];
+    companies.forEach(company => {
+      company.events.forEach(event => {
+        if (startDate && endDate) {
+          const eventStart = new Date(event.startDate);
+          if (eventStart >= new Date(startDate) && eventStart <= new Date(endDate)) {
+            allEvents.push({
+              _id: event._id,
+              title: event.title,
+              type: event.type,
+              description: event.description,
+              startDate: event.startDate,
+              endDate: event.endDate,
+              location: event.location,
+              mode: event.mode,
+              companyId: { _id: company._id, name: company.name, logo: company.logo }
+            });
+          }
+        } else {
+          allEvents.push({
+            _id: event._id,
+            title: event.title,
+            type: event.type,
+            description: event.description,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            location: event.location,
+            mode: event.mode,
+            companyId: { _id: company._id, name: company.name, logo: company.logo }
+          });
+        }
+      });
+    });
     
-    res.json(events);
+    allEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+    res.json(allEvents);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -92,17 +117,23 @@ router.get('/my-events', authenticate, async (req, res) => {
 });
 
 // Register for an event
-router.post('/:id/register', authenticate, async (req, res) => {
+router.post('/:companyId/:eventId/register', authenticate, async (req, res) => {
   try {
-    const event = await PlacementEvent.findById(req.params.id);
+    const Company = require('../models/Company');
+    const { companyId, eventId } = req.params;
     
+    const company = await Company.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+    
+    const event = company.events.id(eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
     
-    // Check if already registered
     const alreadyRegistered = event.participants.some(
-      p => p.studentId.toString() === req.user.studentId
+      p => p.studentId === req.user.studentId
     );
     
     if (alreadyRegistered) {
@@ -114,8 +145,7 @@ router.post('/:id/register', authenticate, async (req, res) => {
       status: 'registered'
     });
     
-    await event.save();
-    
+    await company.save();
     res.json({ message: 'Successfully registered for event' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -123,18 +153,24 @@ router.post('/:id/register', authenticate, async (req, res) => {
 });
 
 // Update event attendance status
-router.put('/:id/attendance', authenticate, async (req, res) => {
+router.put('/:companyId/:eventId/attendance', authenticate, async (req, res) => {
   try {
+    const Company = require('../models/Company');
+    const { companyId, eventId } = req.params;
     const { status } = req.body;
     
-    const event = await PlacementEvent.findById(req.params.id);
+    const company = await Company.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
     
+    const event = company.events.id(eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
     
     const participant = event.participants.find(
-      p => p.studentId.toString() === req.user.studentId
+      p => p.studentId === req.user.studentId
     );
     
     if (!participant) {
@@ -142,8 +178,7 @@ router.put('/:id/attendance', authenticate, async (req, res) => {
     }
     
     participant.status = status;
-    await event.save();
-    
+    await company.save();
     res.json({ message: 'Attendance status updated' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -151,17 +186,25 @@ router.put('/:id/attendance', authenticate, async (req, res) => {
 });
 
 // Get event details
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/:companyId/:eventId', authenticate, async (req, res) => {
   try {
-    const event = await PlacementEvent.findById(req.params.id)
-      .populate('companyId', 'name logo description')
-      .populate('participants.studentId', 'fullName universityRegisterNumber');
+    const Company = require('../models/Company');
+    const { companyId, eventId } = req.params;
     
+    const company = await Company.findById(companyId).select('name logo events');
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+    
+    const event = company.events.id(eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
     
-    res.json(event);
+    res.json({
+      ...event.toObject(),
+      companyId: { _id: company._id, name: company.name, logo: company.logo }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

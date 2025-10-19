@@ -5,21 +5,9 @@ import { applicationAPI, resourceAPI } from '../services/api';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  BookOpen, 
-  FileText, 
-  Video, 
-  Link as LinkIcon, 
-  Download,
-  ExternalLink,
-  Search,
-  Star,
-  Clock,
-  Users,
-  RefreshCw,
-  Upload,
-  AlertCircle
-} from "lucide-react";
+import { BookOpen, Search, RefreshCw, Upload, AlertCircle } from "lucide-react";
+import ResourceCard from '../components/ResourceCard';
+import UploadResourceModal from '../components/UploadResourceModal';
 
 export default function ResourcesPage() {
   const navigate = useNavigate();
@@ -33,6 +21,7 @@ export default function ResourcesPage() {
   const [filteredResources, setFilteredResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   // Fetch companies from pipeline
   useEffect(() => {
@@ -178,41 +167,7 @@ export default function ResourcesPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
 
-  const getResourceIcon = (type) => {
-    switch (type?.toLowerCase()) {
-      case 'pdf':
-      case 'document':
-        return <FileText className="w-5 h-5" />;
-      case 'video':
-        return <Video className="w-5 h-5" />;
-      case 'link':
-      case 'url':
-        return <LinkIcon className="w-5 h-5" />;
-      default:
-        return <BookOpen className="w-5 h-5" />;
-    }
-  };
-
-  const formatFileSize = (bytes) => {
-    if (!bytes) return 'N/A';
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
 
   const selectedCompanyData = companies.find(c => c.id === selectedCompany);
   const resourceCount = filteredResources.length;
@@ -352,6 +307,24 @@ export default function ResourcesPage() {
                   {resourceCount} resource{resourceCount !== 1 ? 's' : ''} available
                 </p>
               </div>
+              {(selectedCompany !== 'all' && companies.length > 0) ? (
+                <Button
+                  onClick={() => setShowUploadModal(true)}
+                  className="bg-teal-600 hover:bg-teal-700"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Resource
+                </Button>
+              ) : (
+                <Button
+                  disabled
+                  title={companies.length === 0 ? 'No companies available' : 'Select a company to upload resources'}
+                  className="bg-gray-300 text-gray-500 cursor-not-allowed"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Resource
+                </Button>
+              )}
             </div>
 
             {/* Loading State */}
@@ -423,112 +396,28 @@ export default function ResourcesPage() {
             {!loading && !error && filteredResources.length > 0 && (
               <div className="space-y-4">
                 {filteredResources.map((resource) => (
-                  <Card key={resource._id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3 md:gap-4 flex-1">
-                          {/* Icon */}
-                          <div className="bg-teal-100 p-3 rounded-lg">
-                            {getResourceIcon(resource.resourceType)}
-                          </div>
-
-                          {/* Content */}
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                                  {resource.title}
-                                </h3>
-                                <p className="text-gray-600 text-sm mb-3">
-                                  {resource.description}
-                                </p>
-
-                                {/* Meta Info */}
-                                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                                  <div className="flex items-center">
-                                    <span className="font-medium mr-1">{resource.resourceType}</span>
-                                    {resource.fileSize && (
-                                      <span>• {formatFileSize(resource.fileSize)}</span>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="flex items-center">
-                                    <Download className="w-4 h-4 mr-1" />
-                                    {resource.downloads || 0} downloads
-                                  </div>
-                                  
-                                  <div className="flex items-center">
-                                    <Users className="w-4 h-4 mr-1" />
-                                    {resource.views || 0} views
-                                  </div>
-                                  
-                                  {resource.rating?.average > 0 && (
-                                    <div className="flex items-center">
-                                      <Star className="w-4 h-4 mr-1 fill-yellow-400 text-yellow-400" />
-                                      {resource.rating.average.toFixed(1)}
-                                      <span className="ml-1">({resource.rating.count})</span>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Footer */}
-                                <div className="mt-3 text-xs text-gray-500">
-                                  Uploaded by {resource.uploadedBy?.fullName || 'Unknown'} • {formatDate(resource.createdAt)}
-                                </div>
-                              </div>
-
-                              {/* Badge */}
-                              <div>
-                                <span className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
-                                  {resource.category || 'General'}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center space-x-3 mt-4">
-                              {(resource.fileUrl || resource.externalUrl) && (
-                                <Button
-                                  onClick={() => handleDownload(resource)}
-                                  size="sm"
-                                  className="bg-teal-600 hover:bg-teal-700"
-                                >
-                                  {resource.resourceType === 'link' || resource.resourceType === 'url' ? (
-                                    <>
-                                      <ExternalLink className="w-4 h-4 mr-2" />
-                                      Open Link
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Download className="w-4 h-4 mr-2" />
-                                      Download
-                                    </>
-                                  )}
-                                </Button>
-                              )}
-                              
-                              {resource.externalUrl && resource.resourceType === 'video' && (
-                                <Button
-                                  onClick={() => handleView(resource)}
-                                  size="sm"
-                                  variant="outline"
-                                >
-                                  <Video className="w-4 h-4 mr-2" />
-                                  Watch
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <ResourceCard
+                    key={resource._id}
+                    resource={resource}
+                    onDownload={handleDownload}
+                    onView={handleView}
+                  />
                 ))}
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Upload Modal */}
+      <UploadResourceModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        companies={companies.filter(c => c.id !== 'all' && c.name !== 'All Companies')}
+        onSuccess={() => {
+          fetchResources();
+        }}
+      />
     </div>
   );
 }

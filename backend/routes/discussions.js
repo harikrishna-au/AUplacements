@@ -20,12 +20,22 @@ router.get('/channel/:companyId/:channelName', authenticate, async (req, res) =>
     }
     
     const messages = await DiscussionMessage.find(query)
-      .populate('senderId', 'fullName universityRegisterNumber')
+      .populate({
+        path: 'senderId',
+        select: 'fullName universityRegisterNumber',
+        model: 'Student'
+      })
       .sort({ createdAt: -1 })
       .limit(parseInt(limit));
     
+    console.log('📨 Fetched messages:', messages.length);
+    if (messages.length > 0) {
+      console.log('Sample message sender:', messages[0].senderId);
+    }
+    
     res.json(messages.reverse());
   } catch (error) {
+    console.error('❌ Error fetching messages:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -34,6 +44,8 @@ router.get('/channel/:companyId/:channelName', authenticate, async (req, res) =>
 router.post('/send', authenticate, async (req, res) => {
   try {
     const { companyId, channelType, channelName, message, messageType, attachmentUrl, attachmentName, replyTo } = req.body;
+    
+    console.log('📨 Sending message:', { companyId, channelName, senderId: req.user.studentId });
     
     const newMessage = new DiscussionMessage({
       companyId,
@@ -48,6 +60,7 @@ router.post('/send', authenticate, async (req, res) => {
     });
     
     await newMessage.save();
+    console.log('✅ Message saved:', newMessage._id);
     
     // If it's a reply, add to parent's replies array
     if (replyTo) {
@@ -58,10 +71,16 @@ router.post('/send', authenticate, async (req, res) => {
     }
     
     // Populate sender info before sending response
-    await newMessage.populate('senderId', 'fullName universityRegisterNumber');
+    await newMessage.populate({
+      path: 'senderId',
+      select: 'fullName universityRegisterNumber',
+      model: 'Student'
+    });
+    console.log('✅ Message populated with sender info:', newMessage.senderId);
     
     res.status(201).json(newMessage);
   } catch (error) {
+    console.error('❌ Error sending message:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -83,6 +102,12 @@ router.put('/:id', authenticate, async (req, res) => {
     existingMessage.message = message;
     existingMessage.isEdited = true;
     await existingMessage.save();
+    
+    await existingMessage.populate({
+      path: 'senderId',
+      select: 'fullName',
+      model: 'Student'
+    });
     
     res.json(existingMessage);
   } catch (error) {
@@ -176,17 +201,13 @@ router.get('/my-forums', authenticate, async (req, res) => {
       .select('name logo')
       .sort({ name: 1 });
     
-    // Format response with channels
-    const forums = allCompanies.map(company => {
-      const hasApplied = applications.some(
-        app => app.companyId._id.toString() === company._id.toString()
-      );
-      
-      return {
-        companyId: company._id,
-        companyName: company.name,
-        companyLogo: company.logo,
-        hasApplied,
+    // Add General forum at the beginning (always visible to all students)
+    const forums = [
+      {
+        companyId: 'general',
+        companyName: '🌐 General Forum',
+        companyLogo: null,
+        isGeneral: true,
         channels: [
           { name: 'general', displayName: 'General Discussion', icon: '💬' },
           { name: 'interview-tips', displayName: 'Interview Tips', icon: '💡' },
@@ -194,7 +215,29 @@ router.get('/my-forums', authenticate, async (req, res) => {
           { name: 'results', displayName: 'Results & Updates', icon: '📊' },
           { name: 'off-topic', displayName: 'Off Topic', icon: '🎯' }
         ]
-      };
+      }
+    ];
+    
+    // Add company forums
+    allCompanies.forEach(company => {
+      const hasApplied = applications.some(
+        app => app.companyId._id.toString() === company._id.toString()
+      );
+      
+      forums.push({
+        companyId: company._id,
+        companyName: company.name,
+        companyLogo: company.logo,
+        hasApplied,
+        isGeneral: false,
+        channels: [
+          { name: 'general', displayName: 'General Discussion', icon: '💬' },
+          { name: 'interview-tips', displayName: 'Interview Tips', icon: '💡' },
+          { name: 'test-prep', displayName: 'Test Preparation', icon: '📝' },
+          { name: 'results', displayName: 'Results & Updates', icon: '📊' },
+          { name: 'off-topic', displayName: 'Off Topic', icon: '🎯' }
+        ]
+      });
     });
     
     res.json(forums);

@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const discussionMessageSchema = new mongoose.Schema({
   companyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Company',
+    type: mongoose.Schema.Types.Mixed,
     required: true
   },
   
@@ -19,7 +18,7 @@ const discussionMessageSchema = new mongoose.Schema({
   },
   
   senderId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Student',
     required: true
   },
@@ -45,7 +44,7 @@ const discussionMessageSchema = new mongoose.Schema({
   reactions: [{
     emoji: String,
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: 'Student'
     }
   }],

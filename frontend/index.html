@@ -5,25 +5,29 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AU Placements Portal</title>
-    <script>
-      // Safari polyfill for requestIdleCallback
-      window.requestIdleCallback = window.requestIdleCallback || function(cb) {
-        const start = Date.now();
-        return setTimeout(function() {
-          cb({
-            didTimeout: false,
-            timeRemaining: function() {
-              return Math.max(0, 50 - (Date.now() - start));
-            }
-          });
-        }, 1);
-      };
-      window.cancelIdleCallback = window.cancelIdleCallback || function(id) {
-        clearTimeout(id);
-      };
-    </script>
   </head>
   <body>
+    <script>
+      // Safari polyfill - must run before any other scripts
+      if (!window.requestIdleCallback) {
+        window.requestIdleCallback = function(cb) {
+          var start = Date.now();
+          return setTimeout(function() {
+            cb({
+              didTimeout: false,
+              timeRemaining: function() {
+                return Math.max(0, 50 - (Date.now() - start));
+              }
+            });
+          }, 1);
+        };
+      }
+      if (!window.cancelIdleCallback) {
+        window.cancelIdleCallback = function(id) {
+          clearTimeout(id);
+        };
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -235,7 +235,7 @@ export default function DiscussionForum() {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm truncate">{forum.companyName}</p>
-                          {forum.hasApplied && (
+                          {forum.hasApplied && !forum.isGeneral && (
                             <span className="text-xs text-green-600">✓ Applied</span>
                           )}
                         </div>
