@@ -37,7 +37,7 @@ const companyResourceSchema = new mongoose.Schema({
   
   // Metadata
   uploadedBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Student'
   },
   
@@ -63,7 +63,7 @@ const companyResourceSchema = new mongoose.Schema({
   },
   
   approvedBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Student'
   },
   

@@ -4,7 +4,7 @@ const { APPLICATION_STATUS, STAGE_STATUS } = require('../utils/constants');
 
 const studentApplicationSchema = new mongoose.Schema({
   studentId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Student',
     required: true
   },

@@ -1,66 +1,64 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
+const StudentProfile = require('../models/StudentProfile');
 const { authenticate } = require('../middleware/auth');
 
 // Get student profile
 router.get('/profile', authenticate, async (req, res) => {
   try {
-    const student = await Student.findById(req.user.id).select('-__v');
+    const profile = await StudentProfile.findById(req.user.id).select('-__v');
     
-    if (!student) {
+    if (!profile) {
       return res.status(404).json({
         success: false,
-        message: 'Student not found'
+        message: 'Student profile not found'
       });
     }
 
-    // Transform data to use new field names (with fallbacks for old data)
-    const studentData = student.toObject();
+    const profileData = profile.toObject();
     
-    // Map old field names to new ones if new ones don't exist
-    if (!studentData.cgpa && studentData.auccCGPA) {
-      studentData.cgpa = studentData.auccCGPA;
+    // Extract CGPA from academicDetails if needed
+    if (profileData.academicDetails?.cgpa) {
+      profileData.cgpa = profileData.academicDetails.cgpa;
     }
-    if (studentData.activeBacklogs === undefined && studentData.standingBacklogs !== undefined) {
-      studentData.activeBacklogs = studentData.standingBacklogs;
+    if (profileData.academicDetails?.activeBacklogs !== undefined) {
+      profileData.activeBacklogs = profileData.academicDetails.activeBacklogs;
     }
-    if (!studentData.tenthPercentage && studentData.tenthCGPA) {
-      studentData.tenthPercentage = studentData.tenthCGPA;
+    if (profileData.academicDetails?.historyOfBacklogs !== undefined) {
+      profileData.historyOfBacklogs = profileData.academicDetails.historyOfBacklogs;
     }
-    
-    // Set historyOfBacklogs to 0 if not present
-    if (studentData.historyOfBacklogs === undefined) {
-      studentData.historyOfBacklogs = 0;
+    if (profileData.academicDetails?.tenthPercentage) {
+      profileData.tenthPercentage = profileData.academicDetails.tenthPercentage;
     }
-    
-    // Extract course from branch if course field is missing
-    if (!studentData.course && studentData.branch) {
-      // Branch format: "B.TECH-ELECTRICAL & ELECTRONICS ENGINEERING"
-      const branchParts = studentData.branch.split('-');
-      if (branchParts.length > 0) {
-        studentData.course = branchParts[0].trim(); // "B.TECH"
-      }
+    if (profileData.academicDetails?.twelfthPercentage) {
+      profileData.twelfthPercentage = profileData.academicDetails.twelfthPercentage;
+    }
+    if (profileData.academicDetails?.diplomaPercentage) {
+      profileData.diplomaPercentage = profileData.academicDetails.diplomaPercentage;
     }
     
-    // Provide empty string defaults for optional fields
-    studentData.phoneNumber = studentData.phoneNumber || '';
-    studentData.currentAddress = studentData.currentAddress || '';
-    studentData.permanentAddress = studentData.permanentAddress || '';
-    studentData.portfolioUrl = studentData.portfolioUrl || '';
-    studentData.linkedinUrl = studentData.linkedinUrl || '';
-    studentData.githubUrl = studentData.githubUrl || '';
+    // Extract social links
+    if (profileData.socialLinks?.portfolio) {
+      profileData.portfolioUrl = profileData.socialLinks.portfolio;
+    }
+    if (profileData.socialLinks?.linkedin) {
+      profileData.linkedinUrl = profileData.socialLinks.linkedin;
+    }
+    if (profileData.socialLinks?.github) {
+      profileData.githubUrl = profileData.socialLinks.github;
+    }
     
-    // Convert "N/A" to empty string for diploma and other optional fields
-    if (studentData.diplomaPercentage === 'N/A') {
-      studentData.diplomaPercentage = '';
-    } else {
-      studentData.diplomaPercentage = studentData.diplomaPercentage || '';
+    // Extract resume URL from documents
+    if (profileData.documents?.resume?.url) {
+      profileData.resumeUrl = profileData.documents.resume.url;
     }
 
+
+    
     res.json({
       success: true,
-      data: studentData
+      data: profileData
     });
   } catch (error) {
     console.error('Get profile error:', error);
@@ -86,35 +84,45 @@ router.put('/profile', authenticate, async (req, res) => {
       githubUrl
     } = req.body;
 
-    // Only allow updating specific fields
     const updateData = {};
     if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
     if (currentAddress !== undefined) updateData.currentAddress = currentAddress;
     if (permanentAddress !== undefined) updateData.permanentAddress = permanentAddress;
-    if (tenthPercentage !== undefined) updateData.tenthPercentage = tenthPercentage;
-    if (twelfthPercentage !== undefined) updateData.twelfthPercentage = twelfthPercentage;
-    if (diplomaPercentage !== undefined) updateData.diplomaPercentage = diplomaPercentage;
-    if (portfolioUrl !== undefined) updateData.portfolioUrl = portfolioUrl;
-    if (linkedinUrl !== undefined) updateData.linkedinUrl = linkedinUrl;
-    if (githubUrl !== undefined) updateData.githubUrl = githubUrl;
+    
+    // Update nested academic details
+    if (tenthPercentage !== undefined) updateData['academicDetails.tenthPercentage'] = tenthPercentage;
+    if (twelfthPercentage !== undefined) updateData['academicDetails.twelfthPercentage'] = twelfthPercentage;
+    if (diplomaPercentage !== undefined) updateData['academicDetails.diplomaPercentage'] = diplomaPercentage;
+    
+    // Update nested social links
+    if (portfolioUrl !== undefined) updateData['socialLinks.portfolio'] = portfolioUrl;
+    if (linkedinUrl !== undefined) updateData['socialLinks.linkedin'] = linkedinUrl;
+    if (githubUrl !== undefined) updateData['socialLinks.github'] = githubUrl;
+    
+    // Update last profile update timestamp
+    updateData['activityLog.lastProfileUpdate'] = new Date();
 
-    const student = await Student.findByIdAndUpdate(
+    const profile = await StudentProfile.findByIdAndUpdate(
       req.user.id,
       { $set: updateData },
       { new: true, runValidators: true }
     ).select('-__v');
 
-    if (!student) {
+    if (!profile) {
       return res.status(404).json({
         success: false,
-        message: 'Student not found'
+        message: 'Student profile not found'
       });
     }
+    
+    // Recalculate profile completion
+    profile.calculateProfileCompletion();
+    await profile.save();
 
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      data: student
+      data: profile
     });
   } catch (error) {
     console.error('Update profile error:', error);
@@ -125,21 +133,6 @@ router.put('/profile', authenticate, async (req, res) => {
   }
 });
 
-// Upload resume (placeholder - will add file handling later)
-router.post('/resume', authenticate, async (req, res) => {
-  try {
-    // TODO: Implement file upload with multer
-    res.status(501).json({
-      success: false,
-      message: 'Resume upload not yet implemented'
-    });
-  } catch (error) {
-    console.error('Resume upload error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to upload resume'
-    });
-  }
-});
+
 
 module.exports = router;

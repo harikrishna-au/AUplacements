@@ -31,15 +31,40 @@ async function importStudentsFromExcel(filePath) {
         const collegeEmail = `${registerNumber}@andhrauniversity.edu.in`.toLowerCase();
 
         // Check if student already exists
-        const existing = await Student.findOne({ collegeEmail });
+        const existing = await Student.findById(registerNumber);
         if (existing) {
           console.log(`⏭️  Skipping ${registerNumber} - already exists`);
           skipped++;
           continue;
         }
 
-        // Create student record
+        // Filter by allowed branches
+        const branch = row['BRANCH'];
+        const normalizedBranch = branch ? branch.toString().trim().replace(/\s+/g, ' ').replace(/–/g, '-').toLowerCase() : '';
+        const allowedBranches = [
+          'b.tech-computer science & engineering',
+          'b.tech-information technology',
+          'integrated dual degree (b.tech+m.tech) - cse',
+        ];
+        
+        if (!allowedBranches.includes(normalizedBranch)) {
+          console.log(`⏭️  Skipping ${registerNumber} - branch not allowed: ${branch}`);
+          skipped++;
+          continue;
+        }
+
+        // Handle standingBacklogs conversion
+        let standingBacklogs = 0;
+        const backlogValue = row['No of Standing Backlogs'];
+        if (backlogValue && backlogValue.toString().toLowerCase().includes('above')) {
+          standingBacklogs = 1; // Convert "1 & Above" to 1
+        } else if (backlogValue && !isNaN(backlogValue)) {
+          standingBacklogs = parseInt(backlogValue);
+        }
+
+        // Create student record with _id set to registerNumber
         const student = new Student({
+          _id: registerNumber,
           slNo: row['Sl.No'],
           universityRegisterNumber: registerNumber,
           fullName: row['Student Full name (As per AUCC Records)'],
@@ -62,7 +87,7 @@ async function importStudentsFromExcel(filePath) {
           diplomaState: row['Diploma studied state'],
           diplomaYearOfPass: row['Diploma Year of Pass'],
           auccCGPA: row['AUCC- 3-2   Results (CGPA)'],
-          standingBacklogs: row['No of Standing Backlogs'],
+          standingBacklogs: standingBacklogs,
           btechYearOfPass: row['BTech Year of Pass'],
           hasBacklogHistory: row['Did you ever fail any subject in your BTech/BArch  Engineering course? ( HISTORY OF BACKLOGS)'],
           completedInTime: row['Have you completed 12th within 2 years from completing 10th, or Diploma in any Engineering stream within 3 years from completing 10th.'],

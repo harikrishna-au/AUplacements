@@ -4,7 +4,7 @@ const { SUPPORT_TICKET_TYPE, SUPPORT_TICKET_PRIORITY, SUPPORT_TICKET_STATUS } = 
 
 const supportTicketSchema = new mongoose.Schema({
   studentId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Student',
     required: true
   },

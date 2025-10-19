@@ -31,7 +31,15 @@ app.use(cors(corsOptions));
 
 // Request logging
 app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.url}`);
+  console.log(`📨 ${new Date().toLocaleTimeString()} - ${req.method} ${req.url}`);
+  if (req.url.includes('/api/')) {
+    console.log('🔍 API Request details:', {
+      method: req.method,
+      url: req.url,
+      headers: req.headers.authorization ? 'Has Auth Header' : 'No Auth Header',
+      userAgent: req.headers['user-agent']?.substring(0, 50)
+    });
+  }
   next();
 });
 

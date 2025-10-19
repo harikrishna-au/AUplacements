@@ -6,9 +6,12 @@ const mongoose = require('mongoose');
  * Used across the application for tickets, resources, applications, etc.
  */
 const studentProfileSchema = new mongoose.Schema({
+  _id: {
+    type: String
+  },
   // Link to Student account
   studentId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Student',
     required: true,
     unique: true
@@ -29,10 +32,44 @@ const studentProfileSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  // Personal Information (from Students collection)
   phoneNumber: String,
   course: String,
   branch: String,
   currentSemester: Number,
+  slNo: Number,
+  gender: String,
+  nationality: String,
+  dateOfBirth: String,
+  collegeName: String,
+  personalEmail: String,
+  
+  // Contact Information
+  currentAddress: String,
+  permanentAddress: String,
+  
+  // Academic History
+  tenthBoard: String,
+  tenthYearOfPass: String,
+  twelfthBoard: String,
+  twelfthYearOfPass: String,
+  diplomaBoard: String,
+  diplomaState: String,
+  diplomaYearOfPass: String,
+  btechYearOfPass: String,
+  
+  // Additional Student Details
+  hasBacklogHistory: String,
+  completedInTime: String,
+  admissionEntranceTest: String,
+  entranceTestRank: String,
+  category: String,
+  isPwD: String,
+  pwdDetails: String,
+  hasPAN: String,
+  hasPassport: String,
+  hasLaptop: String,
+  hasInternet: String,
 
   // Profile Status
   isProfileComplete: {
@@ -323,7 +360,7 @@ studentProfileSchema.methods.calculateProfileCompletion = function() {
 studentProfileSchema.methods.updatePlacementStats = async function() {
   const StudentApplication = mongoose.model('StudentApplication');
   
-  const applications = await StudentApplication.find({ studentId: this.studentId });
+  const applications = await StudentApplication.find({ studentId: this.universityRegisterNumber });
   
   this.placementStats.totalApplications = applications.length;
   this.placementStats.shortlisted = applications.filter(app => app.status === 'shortlisted').length;
