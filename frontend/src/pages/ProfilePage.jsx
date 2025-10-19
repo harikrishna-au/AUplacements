@@ -23,12 +23,16 @@ export default function ProfilePage() {
   const loadStudentData = async () => {
     try {
       setLoading(true);
+      console.log('📋 Loading profile data...');
       const response = await studentAPI.getProfile();
+      console.log('📋 Profile response:', response);
       const student = response.data.data;
+      console.log('📋 Student data:', student);
       setStudentData(student);
     } catch (err) {
       setError('Failed to load profile data');
-      console.error(err);
+      console.error('❌ Profile load error:', err);
+      console.error('❌ Error response:', err.response?.data);
     } finally {
       setLoading(false);
     }
