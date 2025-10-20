@@ -19,7 +19,7 @@ function Navbar() {
     navigate('/login');
   };
 
-  const linkBase = 'px-3 py-2 rounded-md text-sm font-medium relative z-10 transition-colors duration-300 flex items-center';
+  const linkBase = 'nav-link-responsive px-2.5 py-2 rounded-md text-sm font-medium relative z-10 transition-colors duration-300 flex items-center whitespace-nowrap flex-shrink-0';
   const activeBase = 'text-white';
   const inactiveBase = 'text-gray-700 hover:text-gray-900';
 
@@ -49,11 +49,24 @@ function Navbar() {
 
   return (
     <>
-    <nav className="fixed top-0 md:top-4 left-0 md:left-1/2 md:-translate-x-1/2 z-50 w-full md:w-[95vw] md:max-w-7xl md:rounded-full bg-white border-b md:border border-gray-200 md:border-purple-200/50 shadow-lg md:shadow-2xl md:shadow-purple-500/10 overflow-x-hidden">
-      <div className="w-full px-6">
-        <div className="flex h-14 items-center justify-between">
-          {/* Left brand + desktop links */}
-          <div className="flex items-center">
+    <style>{`
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      /* Scale down only when user has large text enabled */
+      @media (min-width: 768px) {
+        .nav-link-responsive {
+          font-size: clamp(0.7rem, 0.875rem, 1rem);
+          padding-left: clamp(0.5rem, 0.625rem, 0.75rem);
+          padding-right: clamp(0.5rem, 0.625rem, 0.75rem);
+        }
+      }
+    `}</style>
+    <nav className="fixed top-0 md:top-4 left-0 md:left-1/2 md:-translate-x-1/2 z-50 w-full md:w-[98vw] lg:w-[95vw] md:max-w-7xl md:rounded-full bg-white border-b md:border border-gray-200 md:border-purple-200/50 shadow-lg md:shadow-2xl md:shadow-purple-500/10 overflow-hidden">
+      <div className="w-full px-3 md:px-4 lg:px-6">
+        <div className="flex h-14 items-center gap-2">
+          {/* Left section */}
+          <div className="flex items-center flex-shrink-0">
             <button
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:text-gray-900 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 md:hidden"
               aria-label="Open main menu"
@@ -70,13 +83,17 @@ function Navbar() {
               </svg>
             </button>
 
-            <div className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 md:ml-2 flex items-center text-gray-900 font-bold text-xl tracking-wide">
+            <div className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 md:ml-2 flex items-center text-gray-900 font-bold text-lg md:text-xl tracking-wide whitespace-nowrap">
               AU Placements
             </div>
+          </div>
+
+          {/* Center navigation */}
+          <div className="flex-1 flex justify-center min-w-0">
 
             {isAuthenticated && (
-              <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div ref={navRef} className="flex items-center space-x-1 relative">
+              <div className="hidden md:flex w-full max-w-full overflow-x-auto overflow-y-hidden scrollbar-hide">
+                <div ref={navRef} className="flex items-center gap-1.5 relative mx-auto">
                   {indicatorStyle.width > 0 && (
                     <div 
                       className="absolute top-0 h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-md transition-all duration-300 ease-out"
@@ -96,7 +113,7 @@ function Navbar() {
           </div>
 
           {/* Right actions (desktop) */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center gap-1 flex-shrink-0 ml-auto">
             {isAuthenticated ? (
               <>
                 <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? 'text-indigo-600' : inactiveBase}`}>{user?.name || 'Profile'}</NavLink>
