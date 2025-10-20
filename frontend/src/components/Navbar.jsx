@@ -13,9 +13,10 @@ function Navbar() {
   const navRef = useRef(null);
 
   const handleLogout = async () => {
+    setMobileOpen(false); // Always close mobile menu on logout
     await logout();
-    navigate('/login');
     setShowLogoutModal(false);
+    navigate('/login');
   };
 
   const linkBase = 'px-3 py-2 rounded-md text-sm font-medium relative z-10 transition-colors duration-300 flex items-center';

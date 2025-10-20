@@ -27,6 +27,33 @@
           clearTimeout(id);
         };
       }
+
+      // Suppress browser extension errors globally
+      window.addEventListener('error', function(e) {
+        if (
+          e.message.includes('message channel closed') ||
+          e.message.includes('extension') ||
+          e.filename?.includes('extension') ||
+          e.filename?.includes('inject.js')
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+          return true;
+        }
+      });
+
+      // Suppress unhandled promise rejections from extensions
+      window.addEventListener('unhandledrejection', function(e) {
+        if (
+          e.reason?.message?.includes('message channel closed') ||
+          e.reason?.message?.includes('extension') ||
+          e.reason?.stack?.includes('extension') ||
+          e.reason?.stack?.includes('inject.js')
+        ) {
+          e.preventDefault();
+          return true;
+        }
+      });
     </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
