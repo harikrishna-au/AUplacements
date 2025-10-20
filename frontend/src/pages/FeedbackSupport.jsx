@@ -32,6 +32,7 @@ export default function FeedbackSupport() {
   const [hoveredStar, setHoveredStar] = useState(0);
 
   useEffect(() => {
+    // Only fetch tickets if not on feedback page
     fetchMyTickets();
     fetchTicketStats();
   }, []);
@@ -104,33 +105,62 @@ export default function FeedbackSupport() {
         return;
       }
 
-      // Create ticket
-      await supportAPI.createTicket({
-        type: formData.type,
-        category: formData.category,
-        subject: formData.subject,
-        message: formData.message,
-        priority: formData.priority,
-        rating: formData.type === 'feedback' ? formData.rating : null
-      });
-
-      setSubmitted(true);
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setSubmitted(false);
-        setFormData({
-          type: selectedType,
-          subject: '',
-          category: '',
-          priority: 'medium',
-          message: '',
-          rating: 0
+      // For feedback, save to Feedback collection (no ticket)
+      if (formData.type === 'feedback') {
+        console.log('🔵 FRONTEND: Submitting feedback type detected');
+        console.log('🔵 FRONTEND: Form data:', formData);
+        console.log('🔵 FRONTEND: Calling supportAPI.submitFeedback...');
+        const response = await supportAPI.submitFeedback({
+          category: formData.category,
+          subject: formData.subject,
+          message: formData.message,
+          rating: formData.rating || null
         });
-        // Refresh tickets
-        fetchMyTickets();
-        fetchTicketStats();
-      }, 3000);
+        console.log('🔵 FRONTEND: Feedback response:', response.data);
+        
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          setShowFormModal(false);
+          setFormData({
+            type: 'feedback',
+            subject: '',
+            category: '',
+            priority: 'medium',
+            message: '',
+            rating: 0
+          });
+          // Don't refresh tickets for feedback
+        }, 3000);
+      } else {
+        // Create ticket for bug, feature, help
+        await supportAPI.createTicket({
+          type: formData.type,
+          category: formData.category,
+          subject: formData.subject,
+          message: formData.message,
+          priority: formData.priority
+        });
+
+        setSubmitted(true);
+        
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+          setShowFormModal(false);
+          setFormData({
+            type: selectedType,
+            subject: '',
+            category: '',
+            priority: 'medium',
+            message: '',
+            rating: 0
+          });
+          // Refresh tickets
+          fetchMyTickets();
+          fetchTicketStats();
+        }, 3000);
+      }
 
     } catch (error) {
       console.error('Error submitting ticket:', error);

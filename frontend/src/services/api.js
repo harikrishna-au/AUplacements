@@ -96,6 +96,7 @@ export const eventAPI = {
 export const supportAPI = {
   getMyTickets: () => api.get('/support/my-tickets'),
   getTicketById: (ticketId) => api.get(`/support/tickets/${ticketId}`),
+  submitFeedback: (feedbackData) => api.post('/support/feedback', feedbackData),
   createTicket: (ticketData) => api.post('/support/create', ticketData),
   updateTicketStatus: (ticketId, status) => api.patch(`/support/tickets/${ticketId}/status`, { status }),
   addTicketResponse: (ticketId, message) => api.post(`/support/tickets/${ticketId}/response`, { message }),
