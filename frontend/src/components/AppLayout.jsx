@@ -1,5 +1,5 @@
-
 import { useAuth } from '../context/AuthContext';
+import Navbar from './Navbar';
 
 function AppLayout({ children }) {
   const { isAuthenticated, loading } = useAuth();
