@@ -1,9 +1,11 @@
-import Navbar from './Navbar';
+
+import { useAuth } from '../context/AuthContext';
 
 function AppLayout({ children }) {
+  const { isAuthenticated, loading } = useAuth();
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {isAuthenticated && !loading && <Navbar />}
       <main className="w-full">
         {children}
       </main>
