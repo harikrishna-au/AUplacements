@@ -375,16 +375,54 @@ For issues or questions:
 
 ---
 
-## 🎯 Future Enhancements
+## 🎯 Roadmap & Future Versions
 
-- [ ] Admin dashboard for placement cell
-- [ ] Bulk email notifications
-- [ ] PDF report generation
-- [ ] Mobile application
-- [ ] Resume parsing with AI
-- [ ] Video interview scheduling
-- [ ] Analytics dashboard
-- [ ] Company portal
+### Version 2.0 - Core Admin & Notifications (Next Release)
+- [ ] **Admin Panel** - Full-featured admin dashboard for placement coordinators
+  - Add/edit companies and deadlines
+  - Post and manage notices
+  - View all student applications
+  - Send announcements
+  - Manage events and resources
+- [ ] **Email Notifications** - Automated email system
+  - Application deadlines approaching
+  - New company posted alerts
+  - Status updates (shortlisted/rejected)
+  - Event reminders
+- [ ] **Interview Experiences** - Student-contributed interview stories
+  - Share detailed interview experiences
+  - Read others' experiences by company
+  - Filter by company, round, year
+- [ ] **Global Search** - Search across entire platform
+  - Companies, resources, discussions, events
+
+### Version 2.5 - Enhanced Features
+- [ ] **Company Comparison Tool** - Side-by-side comparison
+  - Package, role, location details
+  - Eligibility criteria
+  - Past placement statistics
+- [ ] **Alumni Network** - Connect with placed alumni
+  - Company-specific alumni contacts
+  - Mentorship program
+  - Referral system
+- [ ] **Bookmarks/Favorites** - Save important content
+  - Resources, forum threads, target companies
+- [ ] **Analytics Dashboard** - Data-driven insights
+  - Application success rates
+  - Popular companies
+  - Average packages by branch
+  - Historical trends
+
+### Version 3.0 - Advanced Features
+- [ ] **Mock Interviews** - Peer-to-peer practice sessions
+- [ ] **Resume Builder** - Built-in resume creation tool
+- [ ] **Skills Assessment** - Self-tests for aptitude and coding
+- [ ] **Study Groups** - Form company-specific preparation groups
+- [ ] **Document Vault** - Store certificates and ID proofs
+- [ ] **PWA/Mobile App** - Progressive Web App for mobile devices
+- [ ] **AI-Powered Resume Parser** - Automatic resume analysis
+- [ ] **Video Interview Scheduling** - Integrated video calls
+- [ ] **Company Portal** - Dedicated portal for recruiters
 
 ---
 

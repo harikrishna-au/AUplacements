@@ -176,16 +176,14 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-screen pt-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      
-
       {/* Header */}
-      <div className="bg-white/70 backdrop-blur-xl border-b border-white/20 py-6 md:py-8">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="py-6 md:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2 text-gray-900">📚 Placement Resources</h1>
+              <h1 className="text-3xl font-bold mb-2 text-gray-900">Placement Resources</h1>
               <p className="text-gray-600">
-                Company-wise study materials, guides, and preparation resources from your pipeline
+                Company-wise study materials and preparation resources
               </p>
             </div>
             <RefreshButton onClick={fetchResources} loading={loading} />
@@ -194,21 +192,21 @@ export default function ResourcesPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
-              <div className="text-2xl font-bold text-blue-600">{Math.max(0, companies.length - 1)}</div>
+              <div className="text-2xl font-bold text-gray-900">{Math.max(0, companies.length - 1)}</div>
               <div className="text-sm text-gray-600">Companies</div>
             </div>
             <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
-              <div className="text-2xl font-bold text-green-600">{resources.length}</div>
+              <div className="text-2xl font-bold text-gray-900">{resources.length}</div>
               <div className="text-sm text-gray-600">Total Resources</div>
             </div>
             <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-gray-900">
                 {resources.filter(r => r.resourceType === 'PDF' || r.resourceType === 'document').length}
               </div>
               <div className="text-sm text-gray-600">PDF Documents</div>
             </div>
             <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-gray-900">
                 {resources.filter(r => r.resourceType === 'video').length}
               </div>
               <div className="text-sm text-gray-600">Videos</div>
@@ -218,7 +216,7 @@ export default function ResourcesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="w-full px-3 sm:px-4 lg:px-8 py-6 md:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
           {/* Sidebar - Companies */}
           <div className="lg:w-64 flex-shrink-0">
@@ -230,7 +228,7 @@ export default function ResourcesPage() {
               <CardContent className="p-0">
                 {loading && companies.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
                     Loading...
                   </div>
                 ) : companies.length === 0 ? (
@@ -254,7 +252,7 @@ export default function ResourcesPage() {
                         key={company.id}
                         onClick={() => handleCompanyChange(company.id)}
                         className={`w-full text-left px-4 py-3 hover:bg-white/80 transition-all rounded-xl flex items-center justify-between ${
-                          selectedCompany === company.id ? 'bg-indigo-50/80 border-l-4 border-indigo-600' : ''
+                          selectedCompany === company.id ? 'bg-blue-50/80 border-l-4 border-blue-600' : ''
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -275,7 +273,7 @@ export default function ResourcesPage() {
                           </div>
                         </div>
                         {selectedCompany === company.id && company.id !== 'all' && (
-                          <div className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-xl">
+                          <div className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-xl">
                             {resources.filter(r => r.companyId._id === company.id).length}
                           </div>
                         )}

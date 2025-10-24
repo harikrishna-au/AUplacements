@@ -84,7 +84,7 @@ function Navbar() {
             </button>
 
             <div className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 md:ml-2 flex items-center text-gray-900 font-bold text-lg md:text-xl tracking-wide whitespace-nowrap">
-              AU Placements
+              AUPlacements
             </div>
           </div>
 
