@@ -83,8 +83,13 @@ function Navbar() {
               </svg>
             </button>
 
-            <div className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 md:ml-2 flex items-center text-gray-900 font-bold text-lg md:text-xl tracking-wide whitespace-nowrap">
-              AUPlacements
+            <div className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 md:ml-2 flex items-center gap-2 text-gray-900 font-bold text-lg md:text-xl tracking-wide whitespace-nowrap">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/en/c/c7/Andhra_University_logo.png" 
+                alt="AU Logo" 
+                className="h-8 w-8 object-contain"
+              />
+              <span>AUPlacements</span>
             </div>
           </div>
 

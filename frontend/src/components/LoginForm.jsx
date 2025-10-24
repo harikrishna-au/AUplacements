@@ -6,15 +6,19 @@ export default function LoginForm() {
     <div className="w-full max-w-md mx-auto px-4 py-6 sm:px-6 sm:py-8">
       {/* Mobile Logo */}
       <div className="lg:hidden text-center mb-8 sm:mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-xl mb-4 sm:mb-5">
-          <span className="text-3xl sm:text-4xl">🎓</span>
+        <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl mb-4 sm:mb-5">
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/en/c/c7/Andhra_University_logo.png" 
+            alt="Andhra University" 
+            className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+          />
         </div>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          AU Placements
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
+          AUPlacements
         </h1>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 p-6 sm:p-8">
         <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Welcome Back</h2>
           <p className="text-sm sm:text-base text-gray-600">Sign in to access your placement dashboard</p>
@@ -34,7 +38,7 @@ export default function LoginForm() {
               socialButtonsBlockButtonText: 'font-semibold',
               dividerLine: 'bg-gray-200',
               dividerText: 'text-gray-500',
-              formButtonPrimary: 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2 rounded-lg transition-all shadow-md hover:shadow-lg text-xs sm:text-sm w-full text-center flex items-center justify-center',
+              formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-xl transition-all shadow-lg shadow-blue-600/20 text-xs sm:text-sm w-full text-center flex items-center justify-center',
               formFieldInput: 'border-2 border-gray-200 focus:border-indigo-500 rounded-lg px-3 py-2 transition-all bg-transparent text-sm sm:text-base w-full',
               formFieldLabel: 'text-gray-700 font-medium text-sm sm:text-base w-full',
               formFieldRow: 'w-full',
@@ -59,7 +63,7 @@ export default function LoginForm() {
 
       <div className="text-center mt-6 sm:mt-8 px-2">
         <p className="text-gray-500 text-xs break-all">
-          Need help? <span className="text-indigo-600 font-medium">placements@andhrauniversity.edu.in</span>
+          Need help? <span className="text-blue-600 font-medium">placements@andhrauniversity.edu.in</span>
         </p>
       </div>
     </div>
