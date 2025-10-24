@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { studentAPI } from '../services/api';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, FileText, ExternalLink } from "lucide-react";
-import ProfileSection from '../components/ProfileSection';
+import { Loader2, FileText, ExternalLink, Edit, Save, X } from "lucide-react";
+import EditableProfileSection from '../components/EditableProfileSection';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -13,6 +13,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [studentData, setStudentData] = useState(null);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadStudentData();
@@ -27,6 +30,7 @@ export default function ProfilePage() {
       const student = response.data.data;
       console.log('📋 Student data:', student);
       setStudentData(student);
+      setFormData(student || {});
     } catch (err) {
       setError('Failed to load profile data');
       console.error('❌ Profile load error:', err);
@@ -34,6 +38,37 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setFormData({ ...studentData });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setFormData({ ...studentData });
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await studentAPI.updateProfile(formData);
+      setStudentData(formData);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      alert('Failed to save profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   if (loading) {
@@ -53,16 +88,49 @@ export default function ProfilePage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">My Profile</h2>
-          <p className="text-gray-600 mt-2">View your personal and academic information</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">My Profile</h2>
+            <p className="text-gray-600 mt-2">View and edit your personal information</p>
+          </div>
+          <div className="flex gap-2">
+            {!isEditing ? (
+              <Button onClick={handleEdit} className="bg-blue-600 text-white hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/20">
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Profile
+              </Button>
+            ) : (
+              <>
+                <Button onClick={handleCancel} variant="outline" className="rounded-xl">
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/20">
+                  {saving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="space-y-6">
-          <ProfileSection
+          <EditableProfileSection
             title="Basic Information"
-            description="This information is from your university records"
+            description="Your personal details"
             studentData={studentData}
+            formData={formData}
+            onChange={handleFieldChange}
+            isEditing={isEditing}
             fields={[
               { id: 'fullName', label: 'Full Name', key: 'fullName' },
               { id: 'registerNumber', label: 'Register Number', key: 'universityRegisterNumber' },
@@ -75,7 +143,7 @@ export default function ProfilePage() {
             ]}
           />
 
-          <ProfileSection
+          <EditableProfileSection
             title="Academic Performance"
             description="Your current academic standing"
             studentData={studentData}
@@ -89,7 +157,7 @@ export default function ProfilePage() {
             ]}
           />
 
-          <ProfileSection
+          <EditableProfileSection
             title="Contact Information"
             description="Your contact details"
             studentData={studentData}
@@ -100,7 +168,7 @@ export default function ProfilePage() {
             ]}
           />
 
-          <ProfileSection
+          <EditableProfileSection
             title="Previous Education"
             description="Your 10th, 12th/Diploma details"
             studentData={studentData}
@@ -114,7 +182,7 @@ export default function ProfilePage() {
             ]}
           />
 
-          <ProfileSection
+          <EditableProfileSection
             title="Online Presence"
             description="Your portfolio and social links"
             studentData={studentData}
@@ -125,7 +193,7 @@ export default function ProfilePage() {
             ]}
           />
 
-          <ProfileSection
+          <EditableProfileSection
             title="Additional Information"
             description="Other details from your records"
             studentData={studentData}
