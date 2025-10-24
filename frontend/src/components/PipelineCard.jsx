@@ -42,8 +42,8 @@ export default function PipelineCard({ application }) {
   };
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow">
-      <CardHeader className="bg-gradient-to-r from-indigo-100 to-purple-100">
+    <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 hover:bg-white/80 transition-all">
+      <CardHeader className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-t-2xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <CompanyLogo 
@@ -60,7 +60,7 @@ export default function PipelineCard({ application }) {
               </CardDescription>
             </div>
           </div>
-          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadge(application.status)}`}>
+          <span className={`px-4 py-2 rounded-xl text-sm font-semibold ${getStatusBadge(application.status)}`}>
             {application.status.replace('-', ' ').toUpperCase()}
           </span>
         </div>
@@ -107,9 +107,11 @@ export default function PipelineCard({ application }) {
 
         {/* Outcome for Selected */}
         {application.status === 'selected' && application.outcome?.package && (
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-green-600" />
+              </div>
               <h4 className="font-semibold text-green-900">Offer Details</h4>
             </div>
             <div className="grid grid-cols-3 gap-4 mt-3">

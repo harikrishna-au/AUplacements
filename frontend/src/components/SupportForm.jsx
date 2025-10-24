@@ -146,13 +146,6 @@ export default function SupportForm({
               </div>
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-                <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-red-800">{error}</span>
-              </div>
-            )}
-
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>

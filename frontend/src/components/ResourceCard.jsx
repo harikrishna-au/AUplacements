@@ -46,11 +46,11 @@ export default function ResourceCard({ resource, onDownload, onView }) {
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 hover:bg-white/80 transition-all">
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 md:gap-4 flex-1">
-            <div className="bg-teal-100 p-3 rounded-lg">
+            <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center">
               {getResourceIcon(resource?.resourceType)}
             </div>
 
@@ -97,7 +97,7 @@ export default function ResourceCard({ resource, onDownload, onView }) {
                 </div>
 
                 <div>
-                  <span className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+                  <span className="inline-block bg-gray-500/10 text-gray-700 px-3 py-1 rounded-xl text-xs font-medium">
                     {resource?.category || 'General'}
                   </span>
                 </div>
@@ -108,7 +108,7 @@ export default function ResourceCard({ resource, onDownload, onView }) {
                   <Button
                     onClick={() => onDownload?.(resource)}
                     size="sm"
-                    className="bg-teal-600 hover:bg-teal-700"
+                    className="bg-teal-600 rounded-xl shadow-lg shadow-teal-600/20 hover:bg-teal-700"
                   >
                     {resource?.resourceType === 'link' || resource?.resourceType === 'url' ? (
                       <>
@@ -129,6 +129,7 @@ export default function ResourceCard({ resource, onDownload, onView }) {
                     onClick={() => onView?.(resource)}
                     size="sm"
                     variant="outline"
+                    className="rounded-xl"
                   >
                     <Video className="w-4 h-4 mr-2" />
                     Watch

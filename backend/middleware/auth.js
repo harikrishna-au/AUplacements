@@ -219,8 +219,16 @@ async function authenticateClerk(req, res, next) {
     const fullName = [firstName, lastName].filter(Boolean).join(' ') || clerkUser.username || (email ? email.split('@')[0] : 'User');
     console.log('Extracted email:', email, 'fullName:', fullName);
     
-    // Validate email domain - only allow @andhrauniversity.edu.in
-    if (!email || !email.endsWith('@andhrauniversity.edu.in')) {
+    // Get allowed emails from environment variable
+    const allowedEmails = process.env.ALLOWED_EMAILS 
+      ? process.env.ALLOWED_EMAILS.split(',').map(e => e.trim().toLowerCase())
+      : [];
+    
+    // Validate email domain - allow @andhrauniversity.edu.in or whitelisted emails
+    const isUniversityEmail = email && email.endsWith('@andhrauniversity.edu.in');
+    const isWhitelisted = allowedEmails.includes(email?.toLowerCase());
+    
+    if (!email || (!isUniversityEmail && !isWhitelisted)) {
       console.log('❌ Unauthorized email domain:', email);
       return res.status(403).json({
         success: false,

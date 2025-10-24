@@ -81,7 +81,7 @@ export default function ForumChatArea({
           <Button
             onClick={onSendMessage}
             disabled={sending || !message.trim() || !selectedCompany}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            className="bg-indigo-600 text-white hover:bg-indigo-700"
           >
             {sending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -83,6 +83,9 @@ app.use('/api/events', require('./routes/events'));
 // Support routes
 app.use('/api/support', require('./routes/support'));
 
+// Notice routes
+app.use('/api/notices', require('./routes/notices'));
+
  // Companies admin routes (Create/Update companies)
 app.use('/api/companies', require('./routes/companies'));
 

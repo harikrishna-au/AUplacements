@@ -78,7 +78,7 @@ export default function CompanyListPage() {
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="w-full px-4 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -124,9 +124,11 @@ export default function CompanyListPage() {
 
         {/* Empty State */}
         {!loading && companies.length === 0 && (
-          <Card className="shadow-lg">
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
             <CardContent className="py-16 text-center">
-              <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <div className="w-16 h-16 rounded-xl bg-gray-500/10 flex items-center justify-center mx-auto mb-4">
+                <Building2 className="w-8 h-8 text-gray-400" />
+              </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Companies Available</h3>
               <p className="text-gray-600">No companies are currently accepting applications</p>
             </CardContent>

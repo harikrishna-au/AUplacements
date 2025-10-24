@@ -145,7 +145,7 @@ export default function DiscussionForum() {
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       
 
       <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
@@ -158,18 +158,9 @@ export default function DiscussionForum() {
           <RefreshButton onClick={fetchForums} loading={loading} />
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="pt-6">
-              <p className="text-red-800">❌ {error}</p>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Loading State */}
         {loading ? (
-          <Card>
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
@@ -178,13 +169,13 @@ export default function DiscussionForum() {
             </CardContent>
           </Card>
         ) : forums.length === 0 ? (
-          <Card>
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
             <CardContent className="pt-6">
               <p className="text-center text-gray-600 py-12">
                 No forums available. Apply to companies to access their discussion forums!
               </p>
               <div className="text-center">
-                <Button onClick={() => navigate('/companies')} className="mt-4">
+                <Button onClick={() => navigate('/companies')} className="mt-4 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-600/20">
                   Browse Companies
                 </Button>
               </div>

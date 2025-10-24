@@ -61,7 +61,7 @@ export default function PlacementsCalendar() {
 
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <main className="w-full px-4 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -71,24 +71,15 @@ export default function PlacementsCalendar() {
           </div>
           <div className="flex gap-2">
             <RefreshButton onClick={fetchEvents} loading={loading} />
-            <Button onClick={() => setCurrentDate(new Date())} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
+            <Button onClick={() => setCurrentDate(new Date())} className="bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-600/20">
               📅 Today
             </Button>
           </div>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="pt-6">
-              <p className="text-red-800">❌ {error}</p>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Loading State */}
         {loading && !events.length ? (
-          <Card className="shadow-lg">
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600"></div>

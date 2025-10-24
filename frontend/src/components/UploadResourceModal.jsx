@@ -65,12 +65,6 @@ export default function UploadResourceModal({ isOpen, onClose, companies, onSucc
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 bg-white">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-
           <div>
             <Label htmlFor="company">Company *</Label>
             <Select value={formData.companyId} onValueChange={(value) => setFormData({...formData, companyId: value})}>

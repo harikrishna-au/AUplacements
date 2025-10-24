@@ -104,4 +104,10 @@ export const supportAPI = {
   deleteTicket: (ticketId) => api.delete(`/support/tickets/${ticketId}`),
 };
 
+export const noticeAPI = {
+  getNotices: () => api.get('/notices'),
+  createNotice: (noticeData) => api.post('/notices', noticeData),
+  deleteNotice: (noticeId) => api.delete(`/notices/${noticeId}`),
+};
+
 export default api;

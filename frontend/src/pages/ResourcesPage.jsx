@@ -175,11 +175,11 @@ export default function ResourcesPage() {
   const resourceCount = filteredResources.length;
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       
 
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-200/50 py-6 md:py-8">
+      <div className="bg-white/70 backdrop-blur-xl border-b border-white/20 py-6 md:py-8">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
@@ -193,25 +193,25 @@ export default function ResourcesPage() {
           
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-              <div className="text-2xl font-bold text-gray-900">{companies.length - 1}</div>
+            <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
+              <div className="text-2xl font-bold text-blue-600">{Math.max(0, companies.length - 1)}</div>
               <div className="text-sm text-gray-600">Companies</div>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
-              <div className="text-2xl font-bold text-gray-900">{resources.length}</div>
+            <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
+              <div className="text-2xl font-bold text-green-600">{resources.length}</div>
               <div className="text-sm text-gray-600">Total Resources</div>
             </div>
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-100">
-              <div className="text-2xl font-bold text-gray-900">
+            <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
+              <div className="text-2xl font-bold text-orange-600">
                 {resources.filter(r => r.resourceType === 'PDF' || r.resourceType === 'document').length}
               </div>
               <div className="text-sm text-gray-600">PDF Documents</div>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
-              <div className="text-2xl font-bold text-gray-900">
+            <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
+              <div className="text-2xl font-bold text-purple-600">
                 {resources.filter(r => r.resourceType === 'video').length}
               </div>
-              <div className="text-sm text-gray-600">Video Tutorials</div>
+              <div className="text-sm text-gray-600">Videos</div>
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function ResourcesPage() {
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
           {/* Sidebar - Companies */}
           <div className="lg:w-64 flex-shrink-0">
-            <Card>
+            <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
               <CardHeader>
                 <CardTitle className="text-lg">Companies</CardTitle>
                 <CardDescription>Your pipeline companies</CardDescription>
@@ -235,11 +235,13 @@ export default function ResourcesPage() {
                   </div>
                 ) : companies.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
-                    <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-500/10 flex items-center justify-center mx-auto mb-2">
+                      <AlertCircle className="w-5 h-5 text-gray-400" />
+                    </div>
                     <p className="text-sm">No companies in pipeline</p>
                     <Button
                       onClick={() => navigate('/pipeline')}
-                      className="mt-3"
+                      className="mt-3 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-600/20"
                       size="sm"
                     >
                       Browse Companies
@@ -251,8 +253,8 @@ export default function ResourcesPage() {
                       <button
                         key={company.id}
                         onClick={() => handleCompanyChange(company.id)}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                          selectedCompany === company.id ? 'bg-indigo-50 border-l-4 border-indigo-600' : ''
+                        className={`w-full text-left px-4 py-3 hover:bg-white/80 transition-all rounded-xl flex items-center justify-between ${
+                          selectedCompany === company.id ? 'bg-indigo-50/80 border-l-4 border-indigo-600' : ''
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -273,7 +275,7 @@ export default function ResourcesPage() {
                           </div>
                         </div>
                         {selectedCompany === company.id && company.id !== 'all' && (
-                          <div className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                          <div className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-xl">
                             {resources.filter(r => r.companyId._id === company.id).length}
                           </div>
                         )}
@@ -314,7 +316,7 @@ export default function ResourcesPage() {
               {(selectedCompany !== 'all' && companies.length > 0) ? (
                 <Button
                   onClick={() => setShowUploadModal(true)}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  className="bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-700"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Resource
@@ -323,7 +325,7 @@ export default function ResourcesPage() {
                 <Button
                   disabled
                   title={companies.length === 0 ? 'No companies available' : 'Select a company to upload resources'}
-                  className="bg-gray-300 text-gray-500 cursor-not-allowed"
+                  className="bg-gray-300 text-gray-500 cursor-not-allowed rounded-xl"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Resource
@@ -338,23 +340,13 @@ export default function ResourcesPage() {
               </div>
             )}
 
-            {/* Error State */}
-            {error && (
-              <Card className="border-red-200 bg-red-50">
-                <CardContent className="pt-6">
-                  <div className="flex items-center text-red-800">
-                    <AlertCircle className="w-5 h-5 mr-2" />
-                    <span>{error}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Empty State */}
             {!loading && !error && filteredResources.length === 0 && companies.length > 1 && (
-              <Card className="border-gray-200">
+              <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
                 <CardContent className="pt-6 text-center">
-                  <BookOpen className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                  <div className="w-16 h-16 rounded-xl bg-orange-500/10 flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="w-8 h-8 text-orange-500" />
+                  </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     No Resources Available
                   </h3>
@@ -367,6 +359,7 @@ export default function ResourcesPage() {
                     <Button
                       onClick={() => setSearchQuery('')}
                       variant="outline"
+                      className="rounded-xl"
                     >
                       Clear Search
                     </Button>
@@ -377,20 +370,22 @@ export default function ResourcesPage() {
 
             {/* No Pipeline Companies */}
             {!loading && companies.length <= 1 && (
-              <Card className="border-blue-200 bg-blue-50">
+              <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
                 <CardContent className="pt-6 text-center">
-                  <AlertCircle className="w-16 h-16 mx-auto text-blue-500 mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    No Companies in Pipeline
+                  <div className="w-12 h-12 rounded-xl bg-gray-500/10 flex items-center justify-center mx-auto mb-3">
+                    <AlertCircle className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    No companies in your pipeline
                   </h3>
-                  <p className="text-gray-600 mb-4">
-                    Apply to companies to access their resources and study materials.
+                  <p className="text-sm text-gray-600 mb-4">
+                    Apply to companies to access resources
                   </p>
                   <Button
                     onClick={() => navigate('/pipeline')}
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                    className="bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-700"
                   >
-                    Browse Companies
+                    View Companies
                   </Button>
                 </CardContent>
               </Card>

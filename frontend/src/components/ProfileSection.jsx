@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function ProfileSection({ title, description, fields, studentData }) {
   return (
-    <Card>
+    <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -18,14 +18,14 @@ export default function ProfileSection({ title, description, fields, studentData
                 <Textarea
                   value={studentData?.[field.key] || 'N/A'}
                   disabled
-                  className="bg-muted"
+                  className="bg-white/50 rounded-xl"
                   rows={2}
                 />
               ) : (
                 <Input
                   value={studentData?.[field.key] || 'N/A'}
                   disabled
-                  className="bg-muted"
+                  className="bg-white/50 rounded-xl"
                 />
               )}
             </div>

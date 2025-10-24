@@ -62,7 +62,7 @@ function Navbar() {
         }
       }
     `}</style>
-    <nav className="fixed top-0 md:top-4 left-0 md:left-1/2 md:-translate-x-1/2 z-50 w-full md:w-[98vw] lg:w-[95vw] md:max-w-7xl md:rounded-full bg-white border-b md:border border-gray-200 md:border-purple-200/50 shadow-lg md:shadow-2xl md:shadow-purple-500/10 overflow-hidden">
+    <nav className="fixed top-0 md:top-4 left-0 md:left-1/2 md:-translate-x-1/2 z-50 w-full md:w-[98vw] lg:w-[95vw] md:max-w-7xl md:rounded-full bg-white/70 backdrop-blur-xl border-b md:border border-white/20 shadow-lg shadow-black/5 overflow-hidden">
       <div className="w-full px-3 md:px-4 lg:px-6">
         <div className="flex h-14 items-center gap-2">
           {/* Left section */}
@@ -95,10 +95,10 @@ function Navbar() {
               <div className="hidden md:flex w-full max-w-full overflow-x-auto overflow-y-hidden scrollbar-hide">
                 <div ref={navRef} className="flex items-center gap-1.5 relative mx-auto">
                   {indicatorStyle.width > 0 && (
-                    <div 
-                      className="absolute top-0 h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-md transition-all duration-300 ease-out"
-                      style={{ left: `${indicatorStyle.left}px`, width: `${indicatorStyle.width}px` }}
-                    />
+                  <div 
+                  className="absolute top-0 h-full bg-blue-600 rounded-xl shadow-lg shadow-blue-600/20 transition-all duration-300 ease-out"
+                  style={{ left: `${indicatorStyle.left}px`, width: `${indicatorStyle.width}px` }}
+                  />
                   )}
                   <NavLink to="/dashboard" className={({ isActive }) => `${linkBase} ${isActive ? activeBase : inactiveBase}`}>Dashboard</NavLink>
                   <NavLink to="/companies" className={({ isActive }) => `${linkBase} ${isActive ? activeBase : inactiveBase}`}>Companies</NavLink>
@@ -127,23 +127,23 @@ function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      <div onClick={() => setMobileOpen(false)} className={`fixed top-0 bottom-0 left-0 right-0 z-[60] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div onClick={() => setMobileOpen(false)} className={`fixed top-0 bottom-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex flex-col h-screen pt-6 pb-6 px-6 gap-2 overflow-y-auto">
           <div onClick={(e) => e.stopPropagation()} className="flex flex-col gap-2">
             {isAuthenticated ? (
               <>
-                <NavLink onClick={() => setMobileOpen(false)} to="/dashboard" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Dashboard</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/companies" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Companies</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/pipeline" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Pipeline</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/calendar" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Calendar</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/forum" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Forum</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/resources" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Resources</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/support" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Support</NavLink>
-                <NavLink onClick={() => setMobileOpen(false)} to="/profile" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Profile</NavLink>
-                <button onClick={() => { setMobileOpen(false); setShowLogoutModal(true); }} className="w-full text-left py-3 px-4 rounded-lg text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-all mt-4">Logout</button>
+                <NavLink onClick={() => setMobileOpen(false)} to="/dashboard" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Dashboard</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/companies" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Companies</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/pipeline" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Pipeline</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/calendar" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Calendar</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/forum" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Forum</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/resources" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Resources</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/support" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Support</NavLink>
+                <NavLink onClick={() => setMobileOpen(false)} to="/profile" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Profile</NavLink>
+                <button onClick={() => { setMobileOpen(false); setShowLogoutModal(true); }} className="w-full text-left py-3 px-4 rounded-xl text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-all mt-4">Logout</button>
               </>
             ) : (
-              <NavLink onClick={() => setMobileOpen(false)} to="/login" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' : 'text-gray-700 hover:bg-purple-50'}`}>Login</NavLink>
+              <NavLink onClick={() => setMobileOpen(false)} to="/login" className={({ isActive }) => `w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-700 hover:bg-blue-50'}`}>Login</NavLink>
             )}
           </div>
         </div>

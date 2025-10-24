@@ -64,7 +64,7 @@ export default function CompanyPipeline() {
 
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="w-full px-4 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -79,25 +79,25 @@ export default function CompanyPipeline() {
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-lg">
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 hover:bg-white/80 transition-all">
             <CardHeader className="pb-3">
               <CardDescription>Total Applications</CardDescription>
               <CardTitle className="text-3xl">{stats.totalApplications}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg">
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 hover:bg-white/80 transition-all">
             <CardHeader className="pb-3">
               <CardDescription>In Progress</CardDescription>
               <CardTitle className="text-3xl text-blue-600">{stats.inProgress}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg">
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 hover:bg-white/80 transition-all">
             <CardHeader className="pb-3">
               <CardDescription>Offers Received</CardDescription>
               <CardTitle className="text-3xl text-green-600">{stats.selected}</CardTitle>
             </CardHeader>
           </Card>
-          <Card className="shadow-lg">
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5 hover:bg-white/80 transition-all">
             <CardHeader className="pb-3">
               <CardDescription>Rejected</CardDescription>
               <CardTitle className="text-3xl text-red-600">{stats.rejected}</CardTitle>
@@ -113,36 +113,21 @@ export default function CompanyPipeline() {
           </div>
         )}
 
-        {/* Error State */}
-        {error && !loading && (
-          <Card className="border-red-200 bg-red-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <XCircle className="w-6 h-6 text-red-600" />
-                <div>
-                  <p className="font-semibold text-red-900">{error}</p>
-                  <p className="text-sm text-red-700 mt-1">
-                    Please ensure the backend server is running on port 3001
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Empty State */}
         {!loading && !error && applications.length === 0 && (
-          <Card>
+          <Card className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg shadow-black/5">
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <Circle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="w-16 h-16 rounded-xl bg-gray-500/10 flex items-center justify-center mx-auto mb-4">
+                  <Circle className="w-8 h-8 text-gray-400" />
+                </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   No Applications Yet
                 </h3>
                 <p className="text-gray-600 mb-6">
                   You haven't applied to any companies yet. Start applying to track your progress!
                 </p>
-                <Button onClick={() => navigate('/dashboard')}>
+                <Button onClick={() => navigate('/dashboard')} className="bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-600/20">
                   Go to Dashboard
                 </Button>
               </div>

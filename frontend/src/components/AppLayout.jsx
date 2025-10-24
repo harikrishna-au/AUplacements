@@ -1,5 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
+import NoticeBoard from './NoticeBoard';
 
 function AppLayout({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -9,6 +10,7 @@ function AppLayout({ children }) {
       <main className="w-full">
         {children}
       </main>
+      {isAuthenticated && !loading && <NoticeBoard />}
     </div>
   );
 }
