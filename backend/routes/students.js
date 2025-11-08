@@ -7,7 +7,9 @@ const { authenticate } = require('../middleware/auth');
 // Get student profile
 router.get('/profile', authenticate, async (req, res) => {
   try {
-    const profile = await StudentProfile.findById(req.user.id).select('-__v');
+    const profile = await StudentProfile.findById(req.user.id)
+      .select('-__v')
+      .lean(); // Use lean() for better performance on read-only queries
     
     if (!profile) {
       return res.status(404).json({
@@ -16,7 +18,7 @@ router.get('/profile', authenticate, async (req, res) => {
       });
     }
 
-    const profileData = profile.toObject();
+    const profileData = { ...profile };
     
     // Extract CGPA from academicDetails if needed
     if (profileData.academicDetails?.cgpa) {
@@ -53,7 +55,6 @@ router.get('/profile', authenticate, async (req, res) => {
     if (profileData.documents?.resume?.url) {
       profileData.resumeUrl = profileData.documents.resume.url;
     }
-
 
     
     res.json({

@@ -191,15 +191,14 @@ router.get('/my-forums', authenticate, async (req, res) => {
     const StudentApplication = require('../models/StudentApplication');
     const Company = require('../models/Company');
     
-    // Get student's applied companies
-    const applications = await StudentApplication.find({
-      studentId: req.user.studentId
-    }).populate('companyId', 'name logo');
-    
-    // Get all companies (for general access)
-    const allCompanies = await Company.find({ isActive: true })
-      .select('name logo')
-      .sort({ name: 1 });
+    // Use Promise.all to fetch both in parallel for better performance
+    const [appliedCompanyIds, allCompanies] = await Promise.all([
+      StudentApplication.distinct('companyId', { studentId: req.user.studentId }),
+      Company.find({ isActive: true })
+        .select('name logo')
+        .sort({ name: 1 })
+        .lean() // Use lean() for better performance
+    ]);
     
     // Add General forum at the beginning (always visible to all students)
     const forums = [
@@ -218,11 +217,11 @@ router.get('/my-forums', authenticate, async (req, res) => {
       }
     ];
     
-    // Add company forums
+    // Add company forums - convert appliedCompanyIds to Set for O(1) lookup
+    const appliedCompanyIdsSet = new Set(appliedCompanyIds.map(id => id.toString()));
+    
     allCompanies.forEach(company => {
-      const hasApplied = applications.some(
-        app => app.companyId._id.toString() === company._id.toString()
-      );
+      const hasApplied = appliedCompanyIdsSet.has(company._id.toString());
       
       forums.push({
         companyId: company._id,

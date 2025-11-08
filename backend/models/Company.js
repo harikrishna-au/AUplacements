@@ -89,4 +89,9 @@ const companySchema = new mongoose.Schema({
   
 }, { timestamps: true });
 
+// Indexes for common queries
+companySchema.index({ isActive: 1, name: 1 }); // For listing active companies
+companySchema.index({ isActive: 1, isCampusDrive: 1 }); // For campus drive filtering
+companySchema.index({ 'events.startDate': 1 }); // For event date queries
+
 module.exports = mongoose.model('Company', companySchema);

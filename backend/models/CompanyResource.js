@@ -71,4 +71,9 @@ const companyResourceSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+// Indexes for efficient querying
+companyResourceSchema.index({ companyId: 1, status: 1 }); // For company resources by status
+companyResourceSchema.index({ status: 1, createdAt: -1 }); // For listing approved resources
+companyResourceSchema.index({ uploadedBy: 1, createdAt: -1 }); // For user contributions
+
 module.exports = mongoose.model('CompanyResource', companyResourceSchema);
