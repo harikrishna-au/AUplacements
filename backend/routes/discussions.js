@@ -26,7 +26,8 @@ router.get('/channel/:companyId/:channelName', authenticate, async (req, res) =>
         model: 'Student'
       })
       .sort({ createdAt: -1 })
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean(); // Use lean() for better performance
     
     console.log('📨 Fetched messages:', messages.length);
     if (messages.length > 0) {

@@ -36,5 +36,7 @@ const noticeSchema = new mongoose.Schema({
 
 // Index for fetching active notices
 noticeSchema.index({ isActive: 1, createdAt: -1 });
+noticeSchema.index({ isActive: 1, priority: -1, createdAt: -1 }); // For sorted notices
+noticeSchema.index({ isActive: 1, expiresAt: 1 }); // For expiry filtering
 
 module.exports = mongoose.model('Notice', noticeSchema);

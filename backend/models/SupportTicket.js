@@ -84,4 +84,9 @@ supportTicketSchema.pre('save', function(next) {
   next();
 });
 
+// Indexes for better query performance
+supportTicketSchema.index({ studentId: 1, createdAt: -1 }); // For listing student tickets
+supportTicketSchema.index({ studentId: 1, type: 1 }); // For filtering by type
+supportTicketSchema.index({ studentId: 1, status: 1 }); // For filtering by status
+
 module.exports = mongoose.model('SupportTicket', supportTicketSchema);

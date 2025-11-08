@@ -17,7 +17,8 @@ router.get('/', authenticate, async (req, res) => {
       ]
     })
     .sort({ priority: -1, createdAt: -1 })
-    .limit(10);
+    .limit(10)
+    .lean(); // Use lean() for better performance
     
     res.json({ success: true, data: notices });
   } catch (error) {

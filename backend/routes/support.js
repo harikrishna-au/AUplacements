@@ -11,7 +11,8 @@ router.get('/my-tickets', authenticate, async (req, res) => {
       studentId: req.user.studentId,
       type: { $ne: 'feedback' }
     })
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean(); // Use lean() for better performance
     
     res.json(tickets);
   } catch (error) {
@@ -25,7 +26,7 @@ router.get('/tickets/:id', authenticate, async (req, res) => {
     const ticket = await SupportTicket.findOne({
       _id: req.params.id,
       studentId: req.user.studentId
-    });
+    }).lean(); // Use lean() for better performance
     
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
@@ -208,21 +209,47 @@ router.get('/stats', authenticate, async (req, res) => {
   try {
     const studentId = req.user.studentId;
     
-    const [total, pending, inProgress, resolved, closed] = await Promise.all([
-      SupportTicket.countDocuments({ studentId, type: { $ne: 'feedback' } }),
-      SupportTicket.countDocuments({ studentId, type: { $ne: 'feedback' }, status: 'pending' }),
-      SupportTicket.countDocuments({ studentId, type: { $ne: 'feedback' }, status: 'in-progress' }),
-      SupportTicket.countDocuments({ studentId, type: { $ne: 'feedback' }, status: 'resolved' }),
-      SupportTicket.countDocuments({ studentId, type: { $ne: 'feedback' }, status: 'closed' })
+    // Use aggregation for better performance instead of multiple countDocuments calls
+    const stats = await SupportTicket.aggregate([
+      {
+        $match: {
+          studentId,
+          type: { $ne: 'feedback' }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          pending: {
+            $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] }
+          },
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$status', 'in-progress'] }, 1, 0] }
+          },
+          resolved: {
+            $sum: { $cond: [{ $eq: ['$status', 'resolved'] }, 1, 0] }
+          },
+          closed: {
+            $sum: { $cond: [{ $eq: ['$status', 'closed'] }, 1, 0] }
+          }
+        }
+      }
     ]);
     
-    res.json({
-      total,
-      pending,
-      inProgress,
-      resolved,
-      closed
-    });
+    // Return stats or default values if no tickets
+    const result = stats.length > 0 ? stats[0] : {
+      total: 0,
+      pending: 0,
+      inProgress: 0,
+      resolved: 0,
+      closed: 0
+    };
+    
+    // Remove the _id field from response
+    delete result._id;
+    
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
