@@ -10,7 +10,9 @@ const { authenticate } = require('../middleware/auth');
  */
 router.get('/me', authenticate, async (req, res) => {
   try {
-    const student = await Student.findById(req.user.id).select('-__v');
+    const student = await Student.findById(req.user.id)
+      .select('-__v')
+      .lean(); // Use lean() for better performance
 
     if (!student) {
       return res.status(404).json({

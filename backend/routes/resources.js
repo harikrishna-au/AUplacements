@@ -11,7 +11,8 @@ router.get('/company/:companyId', authenticate, async (req, res) => {
       status: 'approved'
     })
     .populate('uploadedBy', 'fullName universityRegisterNumber')
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean(); // Use lean() for better performance
     
     res.json(resources);
   } catch (error) {
@@ -25,7 +26,8 @@ router.get('/all', authenticate, async (req, res) => {
     const resources = await CompanyResource.find({ status: 'approved' })
       .populate('companyId', 'name logo')
       .populate('uploadedBy', 'fullName')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean(); // Use lean() for better performance
     
     res.json(resources);
   } catch (error) {
@@ -134,7 +136,8 @@ router.get('/my-contributions', authenticate, async (req, res) => {
       uploadedBy: req.user.studentId 
     })
     .populate('companyId', 'name logo')
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean(); // Use lean() for better performance
     
     res.json(resources);
   } catch (error) {

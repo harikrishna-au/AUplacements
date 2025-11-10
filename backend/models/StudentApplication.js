@@ -63,4 +63,9 @@ const studentApplicationSchema = new mongoose.Schema({
 // Compound index to ensure one application per student per company
 studentApplicationSchema.index({ studentId: 1, companyId: 1 }, { unique: true });
 
+// Additional indexes for common queries
+studentApplicationSchema.index({ studentId: 1, status: 1 }); // For filtering applications by status
+studentApplicationSchema.index({ studentId: 1, appliedDate: -1 }); // For sorting by application date
+studentApplicationSchema.index({ companyId: 1, status: 1 }); // For company-wise stats
+
 module.exports = mongoose.model('StudentApplication', studentApplicationSchema);

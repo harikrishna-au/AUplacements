@@ -11,7 +11,8 @@ router.get('/companies', authenticate, async (req, res) => {
     console.log('Fetching companies for user:', req.user?.email);
     const companies = await Company.find({ isActive: true })
       .select('name logo description industry rolesOffered eligibilityCriteria stats')
-      .sort({ name: 1 });
+      .sort({ name: 1 })
+      .lean(); // Use lean() for read-only queries for better performance
     
     console.log(`Found ${companies.length} companies`);
     res.json(companies);
@@ -24,7 +25,7 @@ router.get('/companies', authenticate, async (req, res) => {
 // Get company details by ID
 router.get('/companies/:id', authenticate, async (req, res) => {
   try {
-    const company = await Company.findById(req.params.id);
+    const company = await Company.findById(req.params.id).lean(); // Use lean() for performance
     if (!company) {
       return res.status(404).json({ message: 'Company not found' });
     }
@@ -177,19 +178,45 @@ router.put('/applications/:id/withdraw', authenticate, async (req, res) => {
 // Get application statistics
 router.get('/my-stats', authenticate, async (req, res) => {
   try {
-    const applications = await StudentApplication.find({ 
-      studentId: req.user.studentId 
-    });
+    // Use aggregation pipeline for better performance instead of fetching all applications
+    const stats = await StudentApplication.aggregate([
+      { $match: { studentId: req.user.studentId } },
+      {
+        $group: {
+          _id: null,
+          totalApplications: { $sum: 1 },
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$status', 'in-progress'] }, 1, 0] }
+          },
+          selected: {
+            $sum: { $cond: [{ $eq: ['$status', 'selected'] }, 1, 0] }
+          },
+          rejected: {
+            $sum: { $cond: [{ $eq: ['$status', 'rejected'] }, 1, 0] }
+          },
+          withdrawn: {
+            $sum: { $cond: [{ $eq: ['$status', 'withdrawn'] }, 1, 0] }
+          }
+        }
+      }
+    ]);
     
-    const stats = {
-      totalApplications: applications.length,
-      inProgress: applications.filter(a => a.status === 'in-progress').length,
-      selected: applications.filter(a => a.status === 'selected').length,
-      rejected: applications.filter(a => a.status === 'rejected').length,
-      withdrawn: applications.filter(a => a.status === 'withdrawn').length
+    // Return stats or default values if no applications
+    const result = stats.length > 0 ? {
+      totalApplications: stats[0].totalApplications,
+      inProgress: stats[0].inProgress,
+      selected: stats[0].selected,
+      rejected: stats[0].rejected,
+      withdrawn: stats[0].withdrawn
+    } : {
+      totalApplications: 0,
+      inProgress: 0,
+      selected: 0,
+      rejected: 0,
+      withdrawn: 0
     };
     
-    res.json(stats);
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

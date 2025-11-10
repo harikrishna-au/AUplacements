@@ -8,49 +8,52 @@ router.get('/', authenticate, async (req, res) => {
     const Company = require('../models/Company');
     const { startDate, endDate, companyId } = req.query;
     
-    let query = { 'events.0': { $exists: true } };
+    // Build aggregation pipeline for better performance
+    const pipeline = [
+      { $match: { 'events.0': { $exists: true } } },
+      { $unwind: '$events' }
+    ];
     
+    // Add company filter if provided
     if (companyId) {
-      query._id = companyId;
+      pipeline[0].$match._id = require('mongoose').Types.ObjectId(companyId);
     }
     
-    const companies = await Company.find(query).select('name logo events');
-    
-    const allEvents = [];
-    companies.forEach(company => {
-      company.events.forEach(event => {
-        if (startDate && endDate) {
-          const eventStart = new Date(event.startDate);
-          if (eventStart >= new Date(startDate) && eventStart <= new Date(endDate)) {
-            allEvents.push({
-              _id: event._id,
-              title: event.title,
-              type: event.type,
-              description: event.description,
-              startDate: event.startDate,
-              endDate: event.endDate,
-              location: event.location,
-              mode: event.mode,
-              companyId: { _id: company._id, name: company.name, logo: company.logo }
-            });
+    // Add date range filter if provided
+    if (startDate && endDate) {
+      pipeline.push({
+        $match: {
+          'events.startDate': {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate)
           }
-        } else {
-          allEvents.push({
-            _id: event._id,
-            title: event.title,
-            type: event.type,
-            description: event.description,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            location: event.location,
-            mode: event.mode,
-            companyId: { _id: company._id, name: company.name, logo: company.logo }
-          });
         }
       });
+    }
+    
+    // Project the final shape
+    pipeline.push({
+      $project: {
+        _id: '$events._id',
+        title: '$events.title',
+        type: '$events.type',
+        description: '$events.description',
+        startDate: '$events.startDate',
+        endDate: '$events.endDate',
+        location: '$events.location',
+        mode: '$events.mode',
+        companyId: {
+          _id: '$_id',
+          name: '$name',
+          logo: '$logo'
+        }
+      }
     });
     
-    allEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+    // Sort by start date
+    pipeline.push({ $sort: { startDate: 1 } });
+    
+    const allEvents = await Company.aggregate(pipeline);
     res.json(allEvents);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -65,45 +68,43 @@ router.get('/my-events', authenticate, async (req, res) => {
     
     console.log('📅 Fetching events for student:', req.user.studentId);
     
-    // Get applied company IDs from StudentApplication
-    const applications = await StudentApplication.find({ studentId: req.user.studentId }).select('companyId');
-    const appliedCompanyIds = applications.map(app => app.companyId);
+    // Use aggregation pipeline for better performance
+    const appliedCompanyIds = await StudentApplication.distinct('companyId', { 
+      studentId: req.user.studentId 
+    });
+    
     console.log('📅 Applied company IDs:', appliedCompanyIds);
     
-    // Get companies with events that student has applied to
-    const companies = await Company.find({
-      _id: { $in: appliedCompanyIds },
-      'events.0': { $exists: true } // Has at least one event
-    });
-    
-    console.log('📅 Found companies with events:', companies.length);
-    
-    // Extract all events from companies
-    const allEvents = [];
-    companies.forEach(company => {
-      company.events.forEach(event => {
-        allEvents.push({
-          _id: event._id,
-          title: event.title,
-          type: event.type,
-          description: event.description,
-          startDate: event.startDate,
-          endDate: event.endDate,
-          location: event.location,
-          mode: event.mode,
-          maxCapacity: event.maxCapacity,
-          participants: event.participants,
+    // Use aggregation to get events from applied companies
+    const allEvents = await Company.aggregate([
+      {
+        $match: {
+          _id: { $in: appliedCompanyIds },
+          'events.0': { $exists: true }
+        }
+      },
+      { $unwind: '$events' },
+      {
+        $project: {
+          _id: '$events._id',
+          title: '$events.title',
+          type: '$events.type',
+          description: '$events.description',
+          startDate: '$events.startDate',
+          endDate: '$events.endDate',
+          location: '$events.location',
+          mode: '$events.mode',
+          maxCapacity: '$events.maxCapacity',
+          participants: '$events.participants',
           companyId: {
-            _id: company._id,
-            name: company.name,
-            logo: company.logo
+            _id: '$_id',
+            name: '$name',
+            logo: '$logo'
           }
-        });
-      });
-    });
-    
-    // Sort by start date
-    allEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        }
+      },
+      { $sort: { startDate: 1 } }
+    ]);
     
     console.log('📅 Total events found:', allEvents.length);
     
@@ -189,18 +190,18 @@ router.get('/:companyId/:eventId', authenticate, async (req, res) => {
     const Company = require('../models/Company');
     const { companyId, eventId } = req.params;
     
-    const company = await Company.findById(companyId).select('name logo events');
+    const company = await Company.findById(companyId).select('name logo events').lean();
     if (!company) {
       return res.status(404).json({ message: 'Company not found' });
     }
     
-    const event = company.events.id(eventId);
+    const event = company.events.find(e => e._id.toString() === eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
     
     res.json({
-      ...event.toObject(),
+      ...event,
       companyId: { _id: company._id, name: company.name, logo: company.logo }
     });
   } catch (error) {
