@@ -1,429 +1,180 @@
-# 🎓 AU Placements Portal
+# AU Placements Portal
 
-A modern, full-stack placement management system for Andhra University students featuring real-time updates, responsive design, and comprehensive placement tracking.
+A comprehensive placement management system built for Andhra University students to streamline the campus recruitment process.
 
-![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
-![React](https://img.shields.io/badge/React-v19.1.1-blue)
-![MongoDB](https://img.shields.io/badge/MongoDB-v8.19.1-brightgreen)
-![License](https://img.shields.io/badge/License-ISC-yellow)
+## What is this?
 
-## 🌟 Features
+This web application helps students manage their entire placement journey - from browsing companies to tracking applications, participating in discussions, and accessing preparation resources. Built with modern web technologies, it provides a smooth experience across desktop and mobile devices.
 
-### For Students
-- **📧 Magic Link Authentication** - Secure passwordless login using email
-- **👤 Profile Management** - View and manage student profile
-- **🏢 Company Pipeline** - Track application status with companies
-- **📅 Placement Calendar** - View placement events, interviews, and deadlines
-- **💬 Discussion Forums** - Company-specific channels for peer discussions
-- **📚 Resource Library** - Access study materials, interview guides, and prep resources
-- **🎫 Support System** - Submit feedback, report bugs, and get help
+## Core Features
 
-### Key Highlights
-- ✅ **No Mock Data** - All data comes from MongoDB database
-- ✅ **Real-time Updates** - Live application status tracking
-- ✅ **User-specific Content** - Personalized pipeline and resources
-- ✅ **Secure Authentication** - JWT-based with 7-day sessions
-- ✅ **Responsive Design** - Works on desktop and mobile devices
+**For Students:**
+- Browse and apply to companies visiting campus
+- Track application status through different stages
+- View placement calendar with upcoming events and deadlines
+- Join company-specific discussion forums
+- Access interview preparation resources
+- Submit feedback and get support
 
----
+**Platform Highlights:**
+- Clean, intuitive interface built with React
+- Real-time application status updates
+- Mobile-responsive design
+- Secure authentication with Clerk
+- Fast performance with optimized database queries
 
-## 🏗️ Tech Stack
-
-### Backend
-- **Runtime:** Node.js v18+
-- **Framework:** Express.js v5.1.0
-- **Database:** MongoDB v8.19.1
-- **Authentication:** JWT (jsonwebtoken v9.0.2)
-- **Email Service:** Nodemailer v7.0.9
-- **CORS:** cors v2.8.5
+## Tech Stack
 
 ### Frontend
-- **Framework:** React v19.1.1
-- **Build Tool:** Vite v7.1.7
-- **Routing:** React Router DOM v7.9.4
-- **Styling:** TailwindCSS v3.4.18
-- **HTTP Client:** Axios v1.12.2
-- **UI Components:** shadcn/ui, Radix UI
-- **Icons:** Lucide React v0.545.0
-- **Calendar:** React Big Calendar v1.19.4
+- **React 19** - Modern UI framework
+- **Vite** - Fast build tooling
+- **TailwindCSS** - Utility-first styling
+- **React Router** - Client-side routing
+- **Axios** - HTTP requests
 
----
+### Backend
+- **Node.js & Express** - REST API server
+- **MongoDB** - Document database
+- **Mongoose** - MongoDB object modeling
+- **Clerk** - Authentication & user management
 
-## 📁 Project Structure
-
-```
-AUplacements/
-├── backend/                    # Backend API server
-│   ├── config/                # Database configuration
-│   ├── middleware/            # Authentication middleware
-│   ├── models/                # MongoDB schemas (8 models)
-│   ├── routes/                # API route handlers (7 routes)
-│   ├── scripts/               # Database seeding scripts
-│   ├── services/              # Email and other services
-│   ├── utils/                 # Utility functions
-│   ├── server.js              # Express server entry point
-│   ├── .env                   # Environment variables
-│   └── package.json           # Backend dependencies
-│
-└── frontend/                   # React frontend
-    ├── public/                # Static assets
-    ├── src/
-    │   ├── assets/            # Images, fonts
-    │   ├── components/        # Reusable UI components
-    │   │   ├── ui/            # shadcn/ui components
-    │   │   └── ProtectedRoute.jsx
-    │   ├── context/           # React context (Auth)
-    │   ├── pages/             # Page components (10 pages)
-    │   ├── services/          # API service layer
-    │   ├── lib/               # Utility functions
-    │   ├── App.jsx            # Main app component
-    │   └── main.jsx           # React entry point
-    ├── .env                   # Environment variables
-    ├── vite.config.js         # Vite configuration
-    ├── tailwind.config.js     # Tailwind configuration
-    └── package.json           # Frontend dependencies
-```
-
----
-
-## 🚀 Quick Start
+## Getting Started
 
 ### Prerequisites
-- Node.js v18 or higher
-- MongoDB installed and running
-- Gmail account (for email service)
+- Node.js 18 or higher
+- MongoDB (local or Atlas)
+- Clerk account for authentication
 
-### 1. Clone the Repository
+### Installation
+
+1. **Clone the repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/harikrishna-au/AUplacements.git
 cd AUplacements
 ```
 
-### 2. Setup Backend
+2. **Setup Backend**
 ```bash
 cd backend
 npm install
 
-# Configure environment variables
+# Create .env file
 cp .env.example .env
-# Edit .env with your configuration:
-# - PORT=3001
-# - MONGODB_URI=mongodb://localhost:27017/auplacements
-# - JWT_SECRET=your-secret-key
-# - EMAIL_USER=your-gmail@gmail.com
-# - EMAIL_PASSWORD=your-gmail-app-password
+# Edit .env with your MongoDB URI and Clerk credentials
 
-# Seed the database
-npm run seed-companies
-npm run seed-events
-
-# Start the backend server
+# Start backend
 npm start
-# Backend runs on http://localhost:3001
 ```
 
-### 3. Setup Frontend
-```bash
-cd ../frontend
-npm install
-
-# Configure environment variables
-cp .env.example .env
-# Edit .env with:
-# VITE_API_URL=http://localhost:3001/api
-
-# Start the frontend development server
-npm run dev
-# Frontend runs on http://localhost:5173
-```
-
-### 4. Access the Application
-Open your browser and navigate to:
-```
-http://localhost:5173
-```
-
----
-
-## 📚 API Endpoints
-
-### Authentication (`/api/auth`)
-- `POST /send-magic-link` - Send login magic link
-- `GET /verify/:token` - Verify magic link token
-- `GET /me` - Get current user
-
-### Students (`/api/students`)
-- `GET /profile` - Get student profile
-- `PUT /profile` - Update profile
-- `POST /resume` - Upload resume
-
-### Applications (`/api/applications`)
-- `GET /companies` - Get all companies
-- `GET /companies/:id` - Get company details
-- `GET /my-applications` - Get student's applications
-- `POST /apply` - Apply to a company
-- `GET /my-stats` - Get application statistics
-
-### Resources (`/api/resources`)
-- `GET /company/:companyId` - Get company resources
-- `GET /all` - Get all resources
-- `POST /contribute` - Contribute a resource
-- `POST /:id/download` - Track download
-- `POST /:id/rate` - Rate a resource
-
-### Discussions (`/api/discussions`)
-- `GET /my-forums` - Get available forums
-- `GET /channel/:companyId/:channelName` - Get messages
-- `POST /send` - Send message
-- `PUT /:id` - Edit message
-- `DELETE /:id` - Delete message
-
-### Events (`/api/events`)
-- `GET /my-events` - Get student's events
-- `POST /:id/register` - Register for event
-- `GET /:id` - Get event details
-
-### Support (`/api/support`)
-- `GET /my-tickets` - Get user's tickets
-- `POST /create` - Create new ticket
-- `GET /stats` - Get ticket statistics
-- `PATCH /tickets/:id/status` - Update ticket status
-
----
-
-## 🗄️ Database Models
-
-1. **Student** - User accounts and profiles
-2. **Company** - Company information and recruitment details
-3. **StudentApplication** - Application tracking
-4. **CompanyResource** - Study materials and resources
-5. **DiscussionMessage** - Forum messages
-6. **PlacementEvent** - Calendar events
-7. **SupportTicket** - Support/feedback system
-8. **MagicLink** - Authentication tokens
-
----
-
-## 🔐 Authentication Flow
-
-1. Student enters email on login page
-2. System sends magic link to email
-3. Student clicks link in email
-4. Token is verified and JWT is issued
-5. JWT stored in localStorage
-6. JWT sent with every API request
-7. Session expires after 7 days
-
----
-
-## 🎨 Pages & Routes
-
-| Route | Page | Description |
-|-------|------|-------------|
-| `/login` | LoginPage | Email login with magic link |
-| `/auth/verify` | VerifyPage | Token verification |
-| `/dashboard` | DashboardPage | User dashboard |
-| `/profile` | ProfilePage | Student profile |
-| `/calendar` | PlacementsCalendar | Placement events calendar |
-| `/pipeline` | CompanyPipeline | Application tracking |
-| `/companies` | CompanyListPage | Browse companies |
-| `/forum` | DiscussionForum | Discussion forums |
-| `/resources` | ResourcesPage | Study resources |
-| `/support` | FeedbackSupport | Support & feedback |
-
----
-
-## 🛠️ Development
-
-### Backend Development
-```bash
-cd backend
-
-# Run with auto-reload
-npm run dev
-
-# Seed database
-npm run seed-companies
-npm run seed-events
-```
-
-### Frontend Development
+3. **Setup Frontend**
 ```bash
 cd frontend
+npm install
 
-# Run development server
+# Create .env file
+cp .env.example .env
+# Add your backend API URL and Clerk publishable key
+
+# Start frontend
 npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
 ```
 
----
+4. **Access the Application**
 
-## 📦 Deployment
+Open http://localhost:5173 in your browser
 
-### Backend Deployment
-1. Set environment variables in production
-2. Update `MONGODB_URI` to production MongoDB
-3. Change `JWT_SECRET` to secure random string
-4. Configure production email service
-5. Set `NODE_ENV=production`
-6. Deploy to cloud platform (Heroku, Railway, etc.)
+## Project Structure
 
-### Frontend Deployment
-1. Update `VITE_API_URL` to production backend URL
-2. Build the application: `npm run build`
-3. Deploy `dist` folder to static hosting (Vercel, Netlify, etc.)
+```
+AUplacements/
+├── backend/
+│   ├── config/          # Database configuration
+│   ├── middleware/      # Auth middleware
+│   ├── models/          # MongoDB schemas
+│   ├── routes/          # API endpoints
+│   └── server.js        # Express server
+│
+└── frontend/
+    ├── src/
+    │   ├── components/  # Reusable components
+    │   ├── context/     # React context providers
+    │   ├── pages/       # Page components
+    │   └── services/    # API client
+    └── vite.config.js   # Build configuration
+```
 
----
+## Key Pages
 
-## 🔧 Environment Variables
+- **Dashboard** - Overview with stats and quick actions
+- **Companies** - Browse and search companies
+- **Pipeline** - Visual application tracker
+- **Calendar** - Placement events and schedules
+- **Forum** - Company-specific discussions
+- **Resources** - Study materials and guides
+- **Support** - Help tickets and feedback
 
-### Backend (.env)
-```env
+## API Endpoints
+
+The backend exposes RESTful APIs for:
+- Authentication (`/api/auth`)
+- Student profiles (`/api/students`)
+- Applications (`/api/applications`)
+- Resources (`/api/resources`)
+- Discussions (`/api/discussions`)
+- Events (`/api/events`)
+- Support tickets (`/api/support`)
+
+## Development
+
+```bash
+# Backend (with auto-reload)
+cd backend
+npm run dev
+
+# Frontend (with HMR)
+cd frontend
+npm run dev
+
+# Build frontend for production
+cd frontend
+npm run build
+```
+
+## Environment Variables
+
+**Backend (.env)**
+```
 PORT=3001
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/auplacements
-JWT_SECRET=your-super-secret-key
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-gmail-app-password
+MONGODB_URI=your_mongodb_connection_string
+CLERK_SECRET_KEY=your_clerk_secret_key
+ALLOWED_EMAILS=comma,separated,emails  # Optional whitelist
 FRONTEND_URL=http://localhost:5173
 ```
 
-### Frontend (.env)
-```env
+**Frontend (.env)**
+```
 VITE_API_URL=http://localhost:3001/api
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 ```
 
----
+## Contributing
 
-## 📝 Key Features Implementation
+This is a student project for Andhra University. Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-### ✅ Real Data Only
-- All pages fetch from MongoDB
-- No hardcoded/mock data
-- Dynamic content based on user
+## License
 
-### ✅ User-Specific Experience
-- Personalized pipeline
-- User's own tickets
-- Applied companies only in resources
-- Custom event list
+ISC License
 
-### ✅ Security
-- JWT authentication
-- Protected routes
-- Token expiry (7 days)
-- Secure password reset
+## Contact
 
-### ✅ Performance
-- Optimistic UI updates
-- Loading states
-- Error handling
-- Auto-refresh on auth errors
-
----
-
-## 🐛 Troubleshooting
-
-### Backend won't start
-- Check MongoDB is running: `mongosh`
-- Verify .env file exists and is configured
-- Check port 3001 is available
-
-### Frontend can't connect to backend
-- Verify backend is running on port 3001
-- Check VITE_API_URL in frontend/.env
-- Ensure CORS is configured correctly
-
-### Email not sending
-- Use Gmail App Password, not regular password
-- Enable 2FA on Gmail account
-- Generate app password: https://myaccount.google.com/apppasswords
-
-### Database issues
-- Check MongoDB connection string
-- Verify database name is correct
-- Run seed scripts if tables are empty
-
----
-
-## 📄 License
-
-This project is licensed under the ISC License.
-
----
-
-## 👥 Contributors
-
-- Development Team - Andhra University
-
----
-
-## 📞 Support
-
-For issues or questions:
-- Submit a ticket in the Support page
+For questions or support:
 - Email: placements@andhrauniversity.edu.in
-- Phone: +91 891 234 5678
+- Project Maintainer: Harikrishna
 
 ---
 
-## 🎯 Roadmap & Future Versions
-
-### Version 2.0 - Core Admin & Notifications (Next Release)
-- [ ] **Admin Panel** - Full-featured admin dashboard for placement coordinators
-  - Add/edit companies and deadlines
-  - Post and manage notices
-  - View all student applications
-  - Send announcements
-  - Manage events and resources
-- [ ] **Email Notifications** - Automated email system
-  - Application deadlines approaching
-  - New company posted alerts
-  - Status updates (shortlisted/rejected)
-  - Event reminders
-- [ ] **Interview Experiences** - Student-contributed interview stories
-  - Share detailed interview experiences
-  - Read others' experiences by company
-  - Filter by company, round, year
-- [ ] **Global Search** - Search across entire platform
-  - Companies, resources, discussions, events
-
-### Version 2.5 - Enhanced Features
-- [ ] **Company Comparison Tool** - Side-by-side comparison
-  - Package, role, location details
-  - Eligibility criteria
-  - Past placement statistics
-- [ ] **Alumni Network** - Connect with placed alumni
-  - Company-specific alumni contacts
-  - Mentorship program
-  - Referral system
-- [ ] **Bookmarks/Favorites** - Save important content
-  - Resources, forum threads, target companies
-- [ ] **Analytics Dashboard** - Data-driven insights
-  - Application success rates
-  - Popular companies
-  - Average packages by branch
-  - Historical trends
-
-### Version 3.0 - Advanced Features
-- [ ] **Mock Interviews** - Peer-to-peer practice sessions
-- [ ] **Resume Builder** - Built-in resume creation tool
-- [ ] **Skills Assessment** - Self-tests for aptitude and coding
-- [ ] **Study Groups** - Form company-specific preparation groups
-- [ ] **Document Vault** - Store certificates and ID proofs
-- [ ] **PWA/Mobile App** - Progressive Web App for mobile devices
-- [ ] **AI-Powered Resume Parser** - Automatic resume analysis
-- [ ] **Video Interview Scheduling** - Integrated video calls
-- [ ] **Company Portal** - Dedicated portal for recruiters
-
----
-
-**Built with ❤️ for Andhra University Students**
+Built with dedication for Andhra University students
