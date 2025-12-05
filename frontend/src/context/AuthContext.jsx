@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react';
-import { attachClerkAuth } from '../services/api';
+// import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react';
+// import { attachClerkAuth } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -13,46 +13,29 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn } = useUser();
-  const { getToken, signOut } = useClerkAuth();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (clerkLoaded) {
-      if (getToken) {
-        attachClerkAuth(getToken);
-      }
-      
-      if (isSignedIn && clerkUser) {
-        setUser({
-          id: clerkUser.id,
-          email: clerkUser.primaryEmailAddress?.emailAddress,
-          name: clerkUser.fullName || clerkUser.firstName,
-          registerNumber: clerkUser.publicMetadata?.registerNumber || '',
-        });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    }
-  }, [clerkUser, isSignedIn, clerkLoaded, getToken]);
+  // Mock User State
+  const [user, setUser] = useState({
+    id: '319123456789',
+    email: 'test.student@andhrauniversity.edu.in',
+    name: 'Test Student',
+    registerNumber: '319123456789',
+  });
+  const [loading, setLoading] = useState(false);
 
   const logout = async () => {
-    try {
-      await signOut();
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Still clear user state even if signOut fails
-      setUser(null);
-    }
+    console.log('Mock Logout');
+    // In no-auth mode, we might not want to actually clear the user, 
+    // or we could set it to null and provide a "Login" button that just resets it.
+    // For now, let's just alert.
+    alert('Logout disabled in No-Auth mode');
   };
+
+  const getToken = async () => 'mock-token';
 
   const value = {
     user,
     loading,
-    isAuthenticated: isSignedIn,
+    isAuthenticated: true,
     logout,
     getToken,
   };

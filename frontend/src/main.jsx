@@ -30,11 +30,10 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 });
 
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-if (!clerkPubKey) {
-  throw new Error('Missing Clerk Publishable Key')
-}
+// const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+// if (!clerkPubKey) {
+//   throw new Error('Missing Clerk Publishable Key')
+// }
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -43,8 +42,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <App />
-    </ClerkProvider>
+    {/* <ClerkProvider publishableKey={clerkPubKey}> */}
+    <App />
+    {/* </ClerkProvider> */}
   </StrictMode>,
 );

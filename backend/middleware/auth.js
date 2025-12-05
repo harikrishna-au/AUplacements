@@ -21,22 +21,22 @@ const getStudentProfileModel = () => {
 // Helper function to create comprehensive StudentProfile from Student data
 async function createOrUpdateStudentProfile(student, clerkUser) {
   const StudentProfileModel = getStudentProfileModel();
-  
+
   try {
     let profile = await StudentProfileModel.findById(student.universityRegisterNumber);
-    
+
     if (!profile) {
       console.log('Creating StudentProfile for student:', student._id);
-      
+
       const publicMetadata = clerkUser.publicMetadata || {};
-      
+
       profile = await StudentProfileModel.create({
         _id: student.universityRegisterNumber,
         studentId: student.universityRegisterNumber,
         universityRegisterNumber: student.universityRegisterNumber,
         fullName: student.fullName,
         collegeEmail: student.collegeEmail,
-        
+
         // Personal Information
         phoneNumber: student.phoneNumber || publicMetadata.phoneNumber,
         course: student.course || publicMetadata.course,
@@ -48,11 +48,11 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
         dateOfBirth: student.dateOfBirth,
         collegeName: student.collegeName,
         personalEmail: student.personalEmail,
-        
+
         // Contact Information
         currentAddress: student.currentAddress,
         permanentAddress: student.permanentAddress,
-        
+
         // Academic History
         tenthBoard: student.tenthBoard,
         tenthYearOfPass: student.tenthYearOfPass,
@@ -62,7 +62,7 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
         diplomaState: student.diplomaState,
         diplomaYearOfPass: student.diplomaYearOfPass,
         btechYearOfPass: student.btechYearOfPass,
-        
+
         // Additional Student Details
         hasBacklogHistory: student.hasBacklogHistory,
         completedInTime: student.completedInTime,
@@ -75,7 +75,7 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
         hasPassport: student.hasPassport,
         hasLaptop: student.hasLaptop,
         hasInternet: student.hasInternet,
-        
+
         academicDetails: {
           cgpa: student.cgpa || student.auccCGPA || publicMetadata.cgpa || '',
           activeBacklogs: student.activeBacklogs || student.standingBacklogs || publicMetadata.activeBacklogs || 0,
@@ -85,12 +85,12 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
           diplomaPercentage: student.diplomaPercentage || publicMetadata.diplomaPercentage || '',
           isEligibleForPlacements: true
         },
-        
+
         technicalSkills: publicMetadata.technicalSkills || [],
         softSkills: publicMetadata.softSkills || [],
         programmingLanguages: publicMetadata.programmingLanguages || [],
         frameworks: publicMetadata.frameworks || [],
-        
+
         careerPreferences: {
           preferredRoles: publicMetadata.preferredRoles || [],
           preferredIndustries: publicMetadata.preferredIndustries || [],
@@ -98,7 +98,7 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
           willingToRelocate: publicMetadata.willingToRelocate !== false,
           jobType: publicMetadata.jobType || 'both'
         },
-        
+
         socialLinks: {
           portfolio: student.portfolioUrl || publicMetadata.portfolioUrl,
           linkedin: student.linkedinUrl || publicMetadata.linkedinUrl,
@@ -106,7 +106,7 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
           twitter: publicMetadata.twitterUrl,
           medium: publicMetadata.mediumUrl
         },
-        
+
         documents: {
           resume: student.resumeUrl ? {
             url: student.resumeUrl,
@@ -114,7 +114,7 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
             fileName: publicMetadata.resumeFileName
           } : undefined
         },
-        
+
         preferences: {
           emailNotifications: true,
           smsNotifications: false,
@@ -123,31 +123,31 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
           notifyOnShortlist: true,
           notifyOnDeadline: true
         },
-        
+
         privacySettings: {
           showPhoneNumber: false,
           showEmail: true,
           allowResourceSharing: true,
           profileVisibility: 'students-only'
         },
-        
+
         activityLog: {
           lastLogin: new Date(),
           lastProfileUpdate: new Date(),
           totalLogins: 1
         },
-        
+
         flags: {
           isBlacklisted: false,
           isPlaced: false,
           hasActiveOffer: false
         }
       });
-      
+
       // Calculate initial profile completion
       profile.calculateProfileCompletion();
       await profile.save();
-      
+
       console.log('✅ Created StudentProfile:', profile._id, 'Completion:', profile.profileCompletionPercentage + '%');
       console.log('📊 Profile creation summary:', {
         id: profile._id,
@@ -161,22 +161,22 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
       // Update login stats and sync data from Student model
       profile.activityLog.lastLogin = new Date();
       profile.activityLog.totalLogins = (profile.activityLog.totalLogins || 0) + 1;
-      
+
       profile.fullName = student.fullName;
       profile.phoneNumber = student.phoneNumber || profile.phoneNumber;
       profile.course = student.course || profile.course;
       profile.branch = student.branch || profile.branch;
-      
+
       if (student.cgpa || student.auccCGPA) {
         profile.academicDetails.cgpa = student.cgpa || student.auccCGPA;
       }
       if (student.activeBacklogs !== undefined || student.standingBacklogs !== undefined) {
         profile.academicDetails.activeBacklogs = student.activeBacklogs || student.standingBacklogs || 0;
       }
-      
+
       profile.calculateProfileCompletion();
       await profile.save();
-      
+
       console.log('✅ Updated StudentProfile:', profile._id, 'Completion:', profile.profileCompletionPercentage + '%');
       console.log('📊 Profile update summary:', {
         id: profile._id,
@@ -185,7 +185,7 @@ async function createOrUpdateStudentProfile(student, clerkUser) {
         totalLogins: profile.activityLog.totalLogins
       });
     }
-    
+
     return profile;
   } catch (error) {
     console.error('Error creating/updating StudentProfile:', error);
@@ -199,7 +199,7 @@ async function authenticateClerk(req, res, next) {
     console.log('🔐 Request headers:', req.headers.authorization ? 'Authorization header present' : 'No authorization header');
     const userId = req.auth.userId;
     console.log('Clerk userId:', userId);
-    
+
     if (!userId) {
       console.log('No userId found in req.auth');
       return res.status(401).json({
@@ -212,22 +212,22 @@ async function authenticateClerk(req, res, next) {
     console.log('Fetching user details from Clerk API...');
     const clerkUser = await clerkClient.users.getUser(userId);
     console.log('Clerk user:', clerkUser.emailAddresses);
-    
+
     const email = clerkUser.emailAddresses?.[0]?.emailAddress;
     const firstName = clerkUser.firstName || '';
     const lastName = clerkUser.lastName || '';
     const fullName = [firstName, lastName].filter(Boolean).join(' ') || clerkUser.username || (email ? email.split('@')[0] : 'User');
     console.log('Extracted email:', email, 'fullName:', fullName);
-    
+
     // Get allowed emails from environment variable
-    const allowedEmails = process.env.ALLOWED_EMAILS 
+    const allowedEmails = process.env.ALLOWED_EMAILS
       ? process.env.ALLOWED_EMAILS.split(',').map(e => e.trim().toLowerCase())
       : [];
-    
+
     // Validate email domain - allow @andhrauniversity.edu.in or whitelisted emails
     const isUniversityEmail = email && email.endsWith('@andhrauniversity.edu.in');
     const isWhitelisted = allowedEmails.includes(email?.toLowerCase());
-    
+
     if (!email || (!isUniversityEmail && !isWhitelisted)) {
       console.log('❌ Unauthorized email domain:', email);
       return res.status(403).json({
@@ -235,11 +235,11 @@ async function authenticateClerk(req, res, next) {
         message: 'Access denied. Please register with your Andhra University email (rollnumber@andhrauniversity.edu.in)'
       });
     }
-    
+
     const StudentModel = getStudentModel();
     const rollNumber = email.split('@')[0];
     let student;
-    
+
     try {
       // Only lookup by roll number (universityRegisterNumber)
       student = await StudentModel.findOne({ universityRegisterNumber: rollNumber });
@@ -251,9 +251,9 @@ async function authenticateClerk(req, res, next) {
         message: 'Database error during authentication'
       });
     }
-    
+
     if (student) {
-      
+
       try {
         // Update existing student with login info
         student.collegeEmail = email.toLowerCase();
@@ -261,7 +261,7 @@ async function authenticateClerk(req, res, next) {
         student.lastLoginAt = new Date();
         await student.save();
         console.log('✅ Updated existing Student:', student._id);
-        
+
         // Create or update StudentProfile
         await createOrUpdateStudentProfile(student, clerkUser);
       } catch (saveError) {
@@ -282,7 +282,7 @@ async function authenticateClerk(req, res, next) {
           lastLoginAt: new Date()
         });
         console.log('✅ Created new Student (no existing data):', student._id);
-        
+
         // Create StudentProfile for new student
         await createOrUpdateStudentProfile(student, clerkUser);
       } catch (createError) {
@@ -293,14 +293,14 @@ async function authenticateClerk(req, res, next) {
         });
       }
     }
-    
+
     if (!student) {
       return res.status(404).json({
         success: false,
         message: 'Student profile not found'
       });
     }
-    
+
     // Update StudentProfile login stats on every login
     try {
       const StudentProfileModel = getStudentProfileModel();
@@ -343,17 +343,72 @@ async function authenticateClerk(req, res, next) {
 module.exports = {
   clerkMiddleware: ClerkExpressRequireAuth(),
   authenticateClerk,
-  authenticate: (req, res, next) => {
-    console.log('Authentication middleware called for:', req.method, req.path);
-    ClerkExpressRequireAuth()(req, res, (err) => {
-      if (err) {
-        console.error('Clerk auth error:', err);
-        return res.status(401).json({
-          success: false,
-          message: 'Authentication failed'
+  authenticate: async (req, res, next) => {
+    console.log('🔓 Mock Authentication middleware called for:', req.method, req.path);
+
+    // Mock User Data
+    const mockUser = {
+      universityRegisterNumber: '319123456789',
+      fullName: 'Test Student',
+      collegeEmail: 'test.student@andhrauniversity.edu.in',
+      course: 'B.Tech',
+      branch: 'CSE',
+      phoneNumber: '9876543210'
+    };
+
+    try {
+      const StudentModel = getStudentModel();
+      const StudentProfileModel = getStudentProfileModel();
+
+      // Ensure mock student exists
+      let student = await StudentModel.findOne({ universityRegisterNumber: mockUser.universityRegisterNumber });
+
+      if (!student) {
+        console.log('Creating Mock Student...');
+        student = await StudentModel.create({
+          _id: mockUser.universityRegisterNumber,
+          ...mockUser,
+          lastLoginAt: new Date()
+        });
+
+        // Create profile for mock student
+        await StudentProfileModel.create({
+          _id: mockUser.universityRegisterNumber,
+          studentId: mockUser.universityRegisterNumber,
+          ...mockUser,
+          academicDetails: {
+            cgpa: '8.5',
+            activeBacklogs: 0,
+            historyOfBacklogs: 0,
+            isEligibleForPlacements: true
+          },
+          activityLog: {
+            lastLogin: new Date(),
+            totalLogins: 1
+          },
+          preferences: {
+            emailNotifications: true
+          },
+          privacySettings: {
+            showEmail: true
+          }
         });
       }
-      authenticateClerk(req, res, next);
-    });
+
+      // Attach user to request
+      req.user = {
+        id: student.universityRegisterNumber,
+        studentId: student.universityRegisterNumber,
+        email: student.collegeEmail,
+        name: student.fullName,
+        registerNumber: student.universityRegisterNumber
+      };
+
+      console.log('✅ Mock Auth successful for:', req.user.email);
+      next();
+    } catch (error) {
+      console.error('Mock Auth Error:', error);
+      res.status(500).json({ message: 'Mock Auth Failed' });
+    }
   }
 };
