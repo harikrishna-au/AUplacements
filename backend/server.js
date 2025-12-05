@@ -48,7 +48,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'AU Placements API',
     version: '1.0.0',
     status: 'running'
@@ -86,8 +86,28 @@ app.use('/api/support', require('./routes/support'));
 // Notice routes
 app.use('/api/notices', require('./routes/notices'));
 
- // Companies admin routes (Create/Update companies)
+// Companies admin routes (Create/Update companies)
 app.use('/api/companies', require('./routes/companies'));
+
+const path = require('path');
+
+// ... (keep existing imports)
+
+// ... (keep existing middleware and routes)
+
+// Companies admin routes (Create/Update companies)
+app.use('/api/companies', require('./routes/companies'));
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  // Any route not matching API routes should be handled by React
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+  });
+}
 
 // 404 handler
 app.use((req, res) => {
@@ -101,7 +121,12 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+// Start server
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
 
