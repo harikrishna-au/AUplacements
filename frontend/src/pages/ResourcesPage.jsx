@@ -15,7 +15,7 @@ export default function ResourcesPage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [selectedCompany, setSelectedCompany] = useState(searchParams.get('company') || 'all');
   const [searchQuery, setSearchQuery] = useState('');
   const [companies, setCompanies] = useState([]);
@@ -54,11 +54,11 @@ export default function ResourcesPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch user's applications (pipeline)
       const response = await applicationAPI.getMyApplications();
       const applications = response.data;
-      
+
       // Extract unique companies with application info
       const companyMap = new Map();
       applications.forEach(app => {
@@ -72,23 +72,23 @@ export default function ResourcesPage() {
           });
         }
       });
-      
+
       const pipelineCompanies = Array.from(companyMap.values());
-      
+
       // Add "All Companies" option at the beginning
       const allCompaniesOption = {
         id: 'all',
         name: 'All Companies',
         logo: '📚'
       };
-      
+
       setCompanies([allCompaniesOption, ...pipelineCompanies]);
-      
+
       // Set default selection if none exists
       if (!selectedCompany && pipelineCompanies.length > 0) {
         setSelectedCompany('all');
       }
-      
+
     } catch (error) {
       console.error('Error fetching pipeline companies:', error);
       setError('Failed to load your pipeline companies');
@@ -101,14 +101,14 @@ export default function ResourcesPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       let resourcesData = [];
-      
+
       if (selectedCompany === 'all') {
         // Fetch resources for all companies in pipeline
         const allResourcesPromises = companies
           .filter(c => c.id !== 'all')
-          .map(company => 
+          .map(company =>
             resourceAPI.getResourcesByCompany(company.id)
               .then(res => res.data)
               .catch(err => {
@@ -116,7 +116,7 @@ export default function ResourcesPage() {
                 return [];
               })
           );
-        
+
         const allResourcesArrays = await Promise.all(allResourcesPromises);
         resourcesData = allResourcesArrays.flat();
       } else {
@@ -124,10 +124,10 @@ export default function ResourcesPage() {
         const response = await resourceAPI.getResourcesByCompany(selectedCompany);
         resourcesData = response.data;
       }
-      
+
       setResources(resourcesData);
       setFilteredResources(resourcesData);
-      
+
     } catch (error) {
       console.error('Error fetching resources:', error);
       setError('Failed to load resources');
@@ -141,32 +141,32 @@ export default function ResourcesPage() {
     setSearchParams({ company: companyId });
   };
 
-  const handleDownload = async (resource) => {
-    try {
-      await resourceAPI.incrementDownload(resource._id);
-      
-      if (resource.fileUrl) {
-        window.open(resource.fileUrl, '_blank');
-      } else if (resource.externalUrl) {
-        window.open(resource.externalUrl, '_blank');
-      }
-    } catch (error) {
-      console.error('Error downloading resource:', error);
+  const handleDownload = (resource) => {
+    // Open immediately to avoid popup blockers
+    if (resource.fileUrl) {
+      window.open(resource.fileUrl, '_blank');
+    } else if (resource.externalUrl) {
+      window.open(resource.externalUrl, '_blank');
     }
+
+    // Track download in background
+    resourceAPI.incrementDownload(resource._id).catch(error => {
+      console.error('Error tracking download:', error);
+    });
   };
 
-  const handleView = async (resource) => {
-    try {
-      await resourceAPI.incrementView(resource._id);
-      
-      if (resource.externalUrl) {
-        window.open(resource.externalUrl, '_blank');
-      } else if (resource.fileUrl) {
-        window.open(resource.fileUrl, '_blank');
-      }
-    } catch (error) {
-      console.error('Error viewing resource:', error);
+  const handleView = (resource) => {
+    // Open immediately to avoid popup blockers
+    if (resource.externalUrl) {
+      window.open(resource.externalUrl, '_blank');
+    } else if (resource.fileUrl) {
+      window.open(resource.fileUrl, '_blank');
     }
+
+    // Track view in background
+    resourceAPI.incrementView(resource._id).catch(error => {
+      console.error('Error tracking view:', error);
+    });
   };
 
 
@@ -188,7 +188,7 @@ export default function ResourcesPage() {
             </div>
             <RefreshButton onClick={fetchResources} loading={loading} />
           </div>
-          
+
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-lg shadow-black/5">
@@ -251,15 +251,14 @@ export default function ResourcesPage() {
                       <button
                         key={company.id}
                         onClick={() => handleCompanyChange(company.id)}
-                        className={`w-full text-left px-4 py-3 hover:bg-white/80 transition-all rounded-xl flex items-center justify-between ${
-                          selectedCompany === company.id ? 'bg-blue-50/80 border-l-4 border-blue-600' : ''
-                        }`}
+                        className={`w-full text-left px-4 py-3 hover:bg-white/80 transition-all rounded-xl flex items-center justify-between ${selectedCompany === company.id ? 'bg-blue-50/80 border-l-4 border-blue-600' : ''
+                          }`}
                       >
                         <div className="flex items-center space-x-3">
                           {company.id === 'all' ? (
                             <span className="text-2xl">{company.logo}</span>
                           ) : (
-                            <CompanyLogo 
+                            <CompanyLogo
                               logo={company.logo}
                               companyName={company.name}
                               size="sm"
@@ -349,7 +348,7 @@ export default function ResourcesPage() {
                     No Resources Available
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    {searchQuery 
+                    {searchQuery
                       ? 'No resources match your search query.'
                       : 'No resources have been uploaded for this company yet.'}
                   </p>
