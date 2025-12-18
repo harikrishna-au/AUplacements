@@ -47,7 +47,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.get('/', (req, res) => {
+// Serve static assets (Always attempt to serve from public if it exists)
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Routes
+app.get('/api', (req, res) => {
   res.json({
     message: 'AU Placements API',
     version: '1.0.0',
@@ -96,22 +100,26 @@ const path = require('path');
 // ... (keep existing middleware and routes)
 
 // Companies admin routes (Create/Update companies)
-app.use('/api/companies', require('./routes/companies'));
+// app.use('/api/companies', require('./routes/companies')); // Removing duplicate
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static(path.join(__dirname, '../public')));
+// 404 handler for API routes ONLY (since catch-all below handles pages)
+// We need to distinguish between API 404 and Page 404 (which should be index.html)
+// Use a catch-all for /api/* to return JSON 404
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API Route not found' });
+});
 
-  // Any route not matching API routes should be handled by React
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../public', 'index.html'));
+// Any other route should be handled by React (SPA Catch-all)
+app.get('*', (req, res) => {
+  // If we are here, it means no API route matched and no static file was found.
+  // Serve index.html so React can handle the routing (or show its own 404)
+  const indexFile = path.resolve(__dirname, '../public', 'index.html');
+  res.sendFile(indexFile, (err) => {
+    if (err) {
+      console.error("Error sending index.html:", err);
+      res.status(500).json({ error: 'Error loading application', details: err.message });
+    }
   });
-}
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
 });
 
 // Error handler
