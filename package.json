@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "build": "cd frontend && npm install && npm run build && cd .. && rm -rf public && mkdir public && cp -r frontend/dist/* public/",
+        "build": "cd frontend && npm install && npm run build && cd .. && rm -rf public dist && mkdir public dist && cp -r frontend/dist/* public/ && cp -r frontend/dist/* dist/",
         "start": "node backend/server.js",
         "dev": "concurrently \"npm run server\" \"npm run client\"",
         "server": "cd backend && nodemon server.js",
