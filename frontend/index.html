@@ -1,62 +1,65 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/en/c/c7/Andhra_University_logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>AUPlacements</title>
-    <script>
-      // Safari polyfill - must run before any other scripts
-      if (!window.requestIdleCallback) {
-        window.requestIdleCallback = function(cb) {
-          var start = Date.now();
-          return setTimeout(function() {
-            cb({
-              didTimeout: false,
-              timeRemaining: function() {
-                return Math.max(0, 50 - (Date.now() - start));
-              }
-            });
-          }, 1);
-        };
-      }
-      if (!window.cancelIdleCallback) {
-        window.cancelIdleCallback = function(id) {
-          clearTimeout(id);
-        };
-      }
 
-      // Suppress browser extension errors globally
-      window.addEventListener('error', function(e) {
-        if (
-          e.message.includes('message channel closed') ||
-          e.message.includes('extension') ||
-          e.filename?.includes('extension') ||
-          e.filename?.includes('inject.js') ||
-          e.message.includes('Can\'t find variable: requestIdleCallback')
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-          return true;
-        }
-      });
+<head>
+  <script>
+    // Safari polyfill - must run before any other scripts
+    if (!window.requestIdleCallback) {
+      window.requestIdleCallback = function (cb) {
+        var start = Date.now();
+        return setTimeout(function () {
+          cb({
+            didTimeout: false,
+            timeRemaining: function () {
+              return Math.max(0, 50 - (Date.now() - start));
+            }
+          });
+        }, 1);
+      };
+    }
+    if (!window.cancelIdleCallback) {
+      window.cancelIdleCallback = function (id) {
+        clearTimeout(id);
+      };
+    }
 
-      // Suppress unhandled promise rejections from extensions
-      window.addEventListener('unhandledrejection', function(e) {
-        if (
-          e.reason?.message?.includes('message channel closed') ||
-          e.reason?.message?.includes('extension') ||
-          e.reason?.stack?.includes('extension') ||
-          e.reason?.stack?.includes('inject.js')
-        ) {
-          e.preventDefault();
-          return true;
-        }
-      });
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    // Suppress browser extension errors globally
+    window.addEventListener('error', function (e) {
+      if (
+        e.message.includes('message channel closed') ||
+        e.message.includes('extension') ||
+        e.filename?.includes('extension') ||
+        e.filename?.includes('inject.js') ||
+        e.message.includes('Can\'t find variable: requestIdleCallback')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return true;
+      }
+    });
+
+    // Suppress unhandled promise rejections from extensions
+    window.addEventListener('unhandledrejection', function (e) {
+      if (
+        e.reason?.message?.includes('message channel closed') ||
+        e.reason?.message?.includes('extension') ||
+        e.reason?.stack?.includes('extension') ||
+        e.reason?.stack?.includes('inject.js')
+      ) {
+        e.preventDefault();
+        return true;
+      }
+    });
+  </script>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/en/c/c7/Andhra_University_logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AUPlacements</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
