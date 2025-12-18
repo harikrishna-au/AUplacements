@@ -1,0 +1,19 @@
+{
+    "name": "au-placements",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "cd frontend && npm install && npm run build",
+        "start": "node backend/server.js",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "server": "cd backend && nodemon server.js",
+        "client": "cd frontend && npm run dev",
+        "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
