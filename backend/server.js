@@ -101,11 +101,11 @@ app.use('/api/companies', require('./routes/companies'));
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   // Set static folder
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.use(express.static(path.join(__dirname, '../public')));
 
   // Any route not matching API routes should be handled by React
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+    res.sendFile(path.resolve(__dirname, '../public', 'index.html'));
   });
 }
 
