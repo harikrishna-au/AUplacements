@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const connectDB = require('./config/database');
 
@@ -92,15 +93,6 @@ app.use('/api/notices', require('./routes/notices'));
 
 // Companies admin routes (Create/Update companies)
 app.use('/api/companies', require('./routes/companies'));
-
-const path = require('path');
-
-// ... (keep existing imports)
-
-// ... (keep existing middleware and routes)
-
-// Companies admin routes (Create/Update companies)
-// app.use('/api/companies', require('./routes/companies')); // Removing duplicate
 
 // 404 handler for API routes ONLY (since catch-all below handles pages)
 // We need to distinguish between API 404 and Page 404 (which should be index.html)
